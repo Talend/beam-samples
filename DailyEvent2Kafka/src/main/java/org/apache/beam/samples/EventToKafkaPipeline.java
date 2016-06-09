@@ -52,7 +52,7 @@ public class EventToKafkaPipeline {
 
         pipeline
                 .apply(TextIO.Read.named("GDELT Daily File").from("http://data.gdeltproject.org/events/" + filePrefix + ".export.CSV.zip").withCompressionType(TextIO.CompressionType.ZIP))
-                .apply(KafkaIO.write().withBootstrapServers("localhost:9092").withTopics(ImmutableList.of("gdelt")));
+                .apply(KafkaIO.write().withBootstrapServers("localhost:9092").withTopic("gdelt"));
 
         pipeline.run();
     }

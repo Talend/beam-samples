@@ -31,11 +31,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.beam</groupId>
-            <artifactId>java-sdk-all</artifactId>
+            <artifactId>beam-sdks-java-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.beam.io</groupId>
-            <artifactId>kafka</artifactId>
+            <groupId>org.apache.beam</groupId>
+            <artifactId>beam-sdks-java-io-kafka</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
