@@ -37,38 +37,45 @@ public class EventToKafkaPipeline {
      * Specific pipeline options.
      */
     private static interface Options extends PipelineOptions {
+        final String GDELT_EVENTS_URL = "http://data.gdeltproject.org/events/";
 
-        @Description("GDELT file base location")
-        @Default.String("http://data.gdeltproject.org/events/")
-        String getBaseLocation();
-        void setBaseLocation(String value);
-
-        @Description("GDELT file")
+        @Description("GDELT file date")
         @Default.InstanceFactory(GDELTFileFactory.class)
-        String getFile();
-        void setFile(String value);
+        String getDate();
+        void setDate(String value);
+
+        @Description("Input Path")
+        String getInput();
+        void setInput(String value);
+
+        @Description("Output Path")
+        String getOutput();
+        void setOutput(String value);
 
         public static class GDELTFileFactory implements DefaultValueFactory<String> {
             public String create(PipelineOptions options) {
                 SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-                return format.format(new Date()) + ".export.CSV.zip";
+                return format.format(new Date());
             }
         }
-
     }
 
     public static void main(String[] args) throws Exception {
-
         Options options = PipelineOptionsFactory.fromArgs(args).withValidation().as(Options.class);
         Pipeline pipeline = Pipeline.create(options);
 
-        // String file = options.getFile();
-        String file = "20160529.export.CSV";
-        // String baseLocation = options.getBaseLocation();
-        String baseLocation = "/home/jbonofre/";
+        String inputPath = options.getInput();
+        if (inputPath == null) {
+            inputPath = Options.GDELT_EVENTS_URL + options.getDate() + ".export.CSV.zip";
+        }
+
+        String outputPath = options.getOutput();
+        if (outputPath == null) {
+            outputPath = "/tmp/gdelt-" + options.getDate();
+        }
 
         pipeline
-                .apply(TextIO.Read.named("GDELT Daily File").from(baseLocation + file))
+                .apply(TextIO.Read.named("GDELT Daily File").from(inputPath))
                 .apply(ParDo.of(new DoFn<String, String>() {
                     public void processElement(ProcessContext c) {
                         for (String field : c.element().split("\\s+")) {
@@ -78,7 +85,7 @@ public class EventToKafkaPipeline {
                     }
                 }))
                 // send the PCollection to the target sink
-                .apply(TextIO.Write.named("GDELT").to("/home/jbonofre/test.csv"));
+                .apply(TextIO.Write.named("GDELT").to(outputPath));
                 //.apply(KafkaIO.write().withBootstrapServers("localhost:9092").withTopic("gdelt"));
 
         pipeline.run();
