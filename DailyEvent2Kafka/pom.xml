@@ -71,6 +71,15 @@
                 </dependency>
             </dependencies>
         </profile>
+        <profile>
+            <id>google-cloud-dataflow</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-runners-google-cloud-dataflow-java</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 
 </project>
