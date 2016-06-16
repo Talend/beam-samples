@@ -20,6 +20,7 @@ package org.apache.beam.samples;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.options.*;
+import org.apache.beam.sdk.repackaged.com.google.common.base.Predicate;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
 import org.slf4j.Logger;
@@ -70,8 +71,8 @@ public class EventsByLocation {
 
         Pipeline pipeline = Pipeline.create(options);
         pipeline
-                .apply(TextIO.Read.named("GDELT Daily File").from(options.getInput()))
-                .apply("Extract Location", ParDo.of(new DoFn<String, String>() {
+                .apply(TextIO.Read.named("GDELTFile").from(options.getInput()))
+                .apply(ParDo.named("ExtractLocation").of(new DoFn<String, String>() {
                     public void processElement(ProcessContext c) {
                         String[] fields = c.element().split("\\t+");
                         if (fields.length > 22) {
@@ -85,14 +86,27 @@ public class EventsByLocation {
                         }
                     }
                 }))
-                .apply("Count Per Location", Count.<String>perElement())
-                .apply("String format", MapElements.via(new SimpleFunction<KV<String, Long>, String>() {
+                .apply("Filtering", Filter.byPredicate(new SerializableFunction<String, Boolean>() {
+                    public Boolean apply(String input) {
+                        if (input.equals("NA")) {
+                            return false;
+                        }
+                        if (input.startsWith("-")) {
+                            return false;
+                        }
+                        if (input.length() != 2) {
+                            return false;
+                        }
+                        return true;
+                    }
+                }))
+                .apply("CountPerLocation", Count.<String>perElement())
+                .apply("StringFormat", MapElements.via(new SimpleFunction<KV<String, Long>, String>() {
                     public String apply(KV<String, Long> input) {
                         return input.getKey() + ": " + input.getValue();
                     }
                 }))
-                .apply(TextIO.Write.named("GDELT").to(options.getOutput()));
-                //.apply(KafkaIO.write().withBootstrapServers("localhost:9092").withTopic("gdelt"));
+                .apply(TextIO.Write.named("Results").to(options.getOutput()));
 
         pipeline.run();
     }
