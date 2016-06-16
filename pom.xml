@@ -25,6 +25,7 @@
 
     <properties>
         <beam.version>0.2.0-incubating-SNAPSHOT</beam.version>
+        <slf4j.version>1.7.14</slf4j.version>
     </properties>
 
     <modules>
@@ -51,7 +52,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
-                <version>1.7.13</version>
+                <version>${slf4j.version}</version>
             </dependency>
 
             <!-- Runners -->
