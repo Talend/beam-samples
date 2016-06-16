@@ -20,7 +20,6 @@ package org.apache.beam.samples;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.options.*;
-import org.apache.beam.sdk.repackaged.com.google.common.base.Predicate;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
 import org.slf4j.Logger;
