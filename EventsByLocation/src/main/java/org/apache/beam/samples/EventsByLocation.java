@@ -18,24 +18,19 @@
 package org.apache.beam.samples;
 
 import org.apache.beam.sdk.Pipeline;
-import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.io.TextIO;
-import org.apache.beam.sdk.io.kafka.KafkaIO;
 import org.apache.beam.sdk.options.*;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
-import org.apache.beam.sdk.values.PCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-public class EventToKafkaPipeline {
+public class EventsByLocation {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EventToKafkaPipeline.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EventsByLocation.class);
     /**
      * Specific pipeline options.
      */
@@ -76,12 +71,24 @@ public class EventToKafkaPipeline {
         Pipeline pipeline = Pipeline.create(options);
         pipeline
                 .apply(TextIO.Read.named("GDELT Daily File").from(options.getInput()))
-                .apply(ParDo.of(new DoFn<String, String>() {
+                .apply("Extract Location", ParDo.of(new DoFn<String, String>() {
                     public void processElement(ProcessContext c) {
-                        for (String field : c.element().split("\\s+")) {
-                            c.output(field);
+                        String[] fields = c.element().split("\\t+");
+                        if (fields.length > 22) {
+                            if (fields[21].length() > 2) {
+                                c.output(fields[21].substring(0, 1));
+                            } else {
+                                c.output(fields[21]);
+                            }
+                        } else {
+                            c.output("NA");
                         }
-                        c.output(Long.toString(System.currentTimeMillis()));
+                    }
+                }))
+                .apply("Count Per Location", Count.<String>perElement())
+                .apply("String format", MapElements.via(new SimpleFunction<KV<String, Long>, String>() {
+                    public String apply(KV<String, Long> input) {
+                        return input.getKey() + ": " + input.getValue();
                     }
                 }))
                 .apply(TextIO.Write.named("GDELT").to(options.getOutput()));

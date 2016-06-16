@@ -28,7 +28,7 @@
     </properties>
 
     <modules>
-        <module>DailyEvent2Kafka</module>
+        <module>EventsByLocation</module>
     </modules>
 
     <dependencyManagement>
