@@ -85,7 +85,7 @@ public class EventsByLocation {
                         }
                     }
                 }))
-                .apply("Filtering", Filter.byPredicate(new SerializableFunction<String, Boolean>() {
+                .apply("Filtering", Filter.by(new SerializableFunction<String, Boolean>() {
                     public Boolean apply(String input) {
                         if (input.equals("NA")) {
                             return false;
