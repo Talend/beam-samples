@@ -70,7 +70,7 @@ public class EventsByLocation {
 
         Pipeline pipeline = Pipeline.create(options);
         pipeline
-                .apply(TextIO.Read.named("GDELTFile").from(options.getInput()))
+                .apply("GDELTFile", TextIO.Read.from(options.getInput()))
                 .apply("ExtractLocation", ParDo.of(new DoFn<String, String>() {
                     public void processElement(ProcessContext c) {
                         String[] fields = c.element().split("\\t+");
@@ -105,7 +105,7 @@ public class EventsByLocation {
                         return input.getKey() + ": " + input.getValue();
                     }
                 }))
-                .apply(TextIO.Write.named("Results").to(options.getOutput()));
+                .apply("Results", TextIO.Write.to(options.getOutput()));
 
         pipeline.run();
     }
