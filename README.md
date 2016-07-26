@@ -17,3 +17,29 @@ Daily, a zip file is created, containing a CSV file with all events using the fo
 ````
 
 The format is described: http://data.gdeltproject.org/documentation/GDELT-Data_Format_Codebook.pdf
+
+# Executing the examples
+
+We have prepared maven profiles to execute the Pipelines in every single runner:
+
+You must activate the profile and choose the appropiate runner:
+
+Direct Runner
+
+    mvn compile exec:java -Dexec.mainClass=org.apache.beam.samples.EventsByLocation -Pdirect-runner -Dexec.args="--runner=DirectRunner --input=/home/dataset/gdelt/2014-2016/201605*.zip --output=/tmp/gdelt/output/"
+
+Spark Runner
+
+    mvn compile exec:java -Dexec.mainClass=org.apache.beam.samples.EventsByLocation -Pspark-runner -Dexec.args="--runner=SparkRunner --input=/home/dataset/gdelt/2014-2016/201605*.zip --output=/tmp/gdelt/output/"
+
+Flink Runner
+
+    mvn compile exec:java -Dexec.mainClass=org.apache.beam.samples.EventsByLocation -Pflink-runner -Dexec.args="--runner=FlinkRunner --input=/home/dataset/gdelt/2014-2016/201605*.zip --output=/tmp/gdelt/output/"
+
+Google Dataflow Runner
+
+    mvn compile exec:java -Dexec.mainClass=org.apache.beam.samples.EventsByLocation -Pflink-runner -Dexec.args="--runner=DataflowRunner --input=/home/dataset/gdelt/2014-2016/201605*.zip --output=/tmp/gdelt/output/"
+
+Google Dataflow Runner (blocking)
+
+    mvn compile exec:java -Dexec.mainClass=org.apache.beam.samples.EventsByLocation -Pflink-runner -Dexec.args="--runner=BlockingDataflowRunner --input=/home/dataset/gdelt/2014-2016/201605*.zip --output=/tmp/gdelt/output/"
