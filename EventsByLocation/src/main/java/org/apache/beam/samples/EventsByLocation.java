@@ -72,6 +72,7 @@ public class EventsByLocation {
         pipeline
                 .apply("GDELTFile", TextIO.Read.from(options.getInput()))
                 .apply("ExtractLocation", ParDo.of(new DoFn<String, String>() {
+                    @ProcessElement
                     public void processElement(ProcessContext c) {
                         String[] fields = c.element().split("\\t+");
                         if (fields.length > 22) {
