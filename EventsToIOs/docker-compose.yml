@@ -1,0 +1,12 @@
+version: '2'
+services:
+  activemq:
+    image: rmohr/activemq:5.10.0
+    ports:
+    - "8161:8161"
+    - "61616:61616"
+    - "61613:61613"
+  mongo:
+    image: mongo:3.2.8
+    ports:
+      - "27017:27017"
