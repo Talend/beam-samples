@@ -58,6 +58,17 @@ public class EventsByLocation {
         }
     }
 
+    private static String getCountry(String row) {
+        String[] fields = row.split("\\t+");
+        if (fields.length > 22) {
+            if (fields[21].length() > 2) {
+                return fields[21].substring(0, 1);
+            }
+            return fields[21];
+        }
+        return "NA";
+    }
+
     public static void main(String[] args) throws Exception {
         Options options = PipelineOptionsFactory.fromArgs(args).withValidation().as(Options.class);
         if (options.getInput() == null) {
@@ -70,43 +81,26 @@ public class EventsByLocation {
 
         Pipeline pipeline = Pipeline.create(options);
         pipeline
-                .apply("GDELTFile", TextIO.Read.from(options.getInput()))
-                .apply("ExtractLocation", ParDo.of(new DoFn<String, String>() {
-                    @ProcessElement
-                    public void processElement(ProcessContext c) {
-                        String[] fields = c.element().split("\\t+");
-                        if (fields.length > 22) {
-                            if (fields[21].length() > 2) {
-                                c.output(fields[21].substring(0, 1));
-                            } else {
-                                c.output(fields[21]);
-                            }
-                        } else {
-                            c.output("NA");
-                        }
-                    }
-                }))
-                .apply("Filtering", Filter.by(new SerializableFunction<String, Boolean>() {
-                    public Boolean apply(String input) {
-                        if (input.equals("NA")) {
-                            return false;
-                        }
-                        if (input.startsWith("-")) {
-                            return false;
-                        }
-                        if (input.length() != 2) {
-                            return false;
-                        }
-                        return true;
-                    }
-                }))
-                .apply("CountPerLocation", Count.<String>perElement())
-                .apply("StringFormat", MapElements.via(new SimpleFunction<KV<String, Long>, String>() {
-                    public String apply(KV<String, Long> input) {
-                        return input.getKey() + ": " + input.getValue();
-                    }
-                }))
-                .apply("Results", TextIO.Write.to(options.getOutput()));
+            .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
+            .apply("TakeASample", Sample.<String>any(1000))
+            .apply("ExtractLocation", ParDo.of(new DoFn<String, String>() {
+                @ProcessElement
+                public void processElement(ProcessContext c) {
+                    c.output(getCountry(c.element()));
+                }
+            }))
+            .apply("FilterValidLocations", Filter.by(new SerializableFunction<String, Boolean>() {
+                public Boolean apply(String input) {
+                return (!input.equals("NA") && !input.startsWith("-") && input.length() == 2);
+                }
+            }))
+            .apply("CountByLocation", Count.<String>perElement())
+            .apply("ConvertToJson", MapElements.via(new SimpleFunction<KV<String, Long>, String>() {
+                public String apply(KV<String, Long> input) {
+                return "{\"" + input.getKey() + "\": " + input.getValue() + "}";
+                }
+            }))
+            .apply("WriteResults", TextIO.Write.to(options.getOutput()));
 
         pipeline.run();
     }
