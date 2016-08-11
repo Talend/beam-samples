@@ -10,3 +10,11 @@ services:
     image: mongo:3.2.8
     ports:
       - "27017:27017"
+  cassandra:
+    image: cassandra:3.7
+    ports:
+      - "7000:7000"
+      - "7001:7001"
+      - "7199:7199"
+      - "9042:9042"
+      - "9160:9160"

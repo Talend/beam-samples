@@ -21,6 +21,9 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.io.TextIO;
+import org.apache.beam.sdk.io.cassandra.CassandraColumnDefinition;
+import org.apache.beam.sdk.io.cassandra.CassandraIO;
+import org.apache.beam.sdk.io.cassandra.CassandraRow;
 import org.apache.beam.sdk.io.jms.JmsIO;
 import org.apache.beam.sdk.io.kafka.KafkaIO;
 import org.apache.beam.sdk.io.kafka.KafkaRecord;
@@ -29,12 +32,14 @@ import org.apache.beam.sdk.options.*;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
+import org.apache.beam.sdk.values.PDone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.jms.ConnectionFactory;
 
@@ -170,11 +175,27 @@ public class EventsToIOs {
                 return "{\"" + input.getKey() + "\": " + input.getValue() + "}";
                 }
             }))
-            .apply("WriteToMongo",
-                MongoDbIO.write()
-                    .withUri(options.getMongoUri())
-                    .withDatabase(options.getMongoDatabase())
-                    .withCollection(options.getMongoCollection()));
+//            .apply("WriteToMongo",
+//                MongoDbIO.write()
+//                    .withUri(options.getMongoUri())
+//                    .withDatabase(options.getMongoDatabase())
+//                    .withCollection(options.getMongoCollection()));
+
+            .apply("ToCassandraRow", ParDo.of(new DoFn<String, CassandraRow>() {
+                @ProcessElement
+                public void processElement(ProcessContext c) {
+                    CassandraRow row = new CassandraRow();
+                    row.add("name", CassandraColumnDefinition.Type.TEXT, c.element());
+                    c.output(row);
+                }
+            }))
+            .apply("WriteToCassandra",
+                    CassandraIO.write()
+                        .withHost("localhost")
+                        .withKeyspace("gdelt")
+                        .withTable("percountry")
+                        .withConfig(new HashMap<String, String>())
+                        .withColumns("ab"));
 
         pipeline.run();
     }
