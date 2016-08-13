@@ -20,7 +20,6 @@ before_install:
   - docker-compose version
 
 script:
-  - docker-compose -f EventsToIOs/docker-compose.yml build
   - docker-compose -f EventsToIOs/docker-compose.yml up -d
-  - docker-compose ps
+  - docker-compose -f EventsToIOs/docker-compose.yml ps
   # do additional tests
