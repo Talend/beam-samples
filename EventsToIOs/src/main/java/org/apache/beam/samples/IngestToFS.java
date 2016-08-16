@@ -18,24 +18,21 @@
 package org.apache.beam.samples;
 
 import org.apache.beam.sdk.Pipeline;
-import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.io.TextIO;
-import org.apache.beam.sdk.io.kafka.KafkaIO;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.DefaultValueFactory;
 import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class IngestToKafka {
+public class IngestToFS {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IngestToKafka.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IngestToFS.class);
     /**
      * Specific pipeline options.
      */
@@ -51,15 +48,9 @@ public class IngestToKafka {
         String getInput();
         void setInput(String value);
 
-        @Description("Kafka Bootstrap Servers")
-        @Default.String("localhost:9092")
-        String getKafkaServer();
-        void setKafkaServer(String value);
-
-        @Description("Kafka Topic Name")
-        @Default.String("gdelt")
-        String getKafkaTopic();
-        void setKafkaTopic(String value);
+        @Description("Output Path")
+        String getOutput();
+        void setOutput(String value);
 
         class GDELTFileFactory implements DefaultValueFactory<String> {
             public String create(PipelineOptions options) {
@@ -79,12 +70,8 @@ public class IngestToKafka {
         Pipeline pipeline = Pipeline.create(options);
         pipeline
             .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
-            .apply("WriteToKafka", KafkaIO.write()
-                .withBootstrapServers(options.getKafkaServer())
-                .withTopic(options.getKafkaTopic())
-                .withKeyCoder(StringUtf8Coder.of())
-                .withValueCoder(StringUtf8Coder.of())
-                .values());
+            .apply("WriteToFS", TextIO.Write.to(options.getOutput())
+        );
         pipeline.run();
     }
 }

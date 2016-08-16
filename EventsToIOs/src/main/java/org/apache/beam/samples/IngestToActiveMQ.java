@@ -52,6 +52,10 @@ public class IngestToActiveMQ {
         String getInput();
         void setInput(String value);
 
+        @Description("JMS Broker")
+        String getJMSBroker();
+        void setJMSBroker(String value);
+
         @Description("JMS queue")
         @Default.String("gdelt")
         String getJMSQueue();
@@ -72,16 +76,14 @@ public class IngestToActiveMQ {
         }
         LOG.info(options.toString());
 
-        ConnectionFactory connFactory = new ActiveMQConnectionFactory();
-        // we read the input file, clean invalid country values
-        // and persist all valid attributes as a message in a Kafka topic
+        ConnectionFactory connFactory = new ActiveMQConnectionFactory(options.getJMSBroker());
+
         Pipeline pipeline = Pipeline.create(options);
         pipeline
             .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
-            .apply("WriteToFS", TextIO.Write.to("/tmp/beam/beam-samples/gdelt.csv")
-//            .apply("WriteToJMS", JmsIO.write()
-//                .withConnectionFactory(connFactory)
-//                .withQueue(options.getJMSQueue())
+            .apply("WriteToJMS", JmsIO.write()
+                .withConnectionFactory(connFactory)
+                .withQueue(options.getJMSQueue())
         );
         pipeline.run();
     }

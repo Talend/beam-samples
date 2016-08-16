@@ -19,33 +19,24 @@ package org.apache.beam.samples;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.beam.sdk.Pipeline;
-import org.apache.beam.sdk.coders.StringUtf8Coder;
-import org.apache.beam.sdk.io.TextIO;
-import org.apache.beam.sdk.io.cassandra.CassandraColumnDefinition;
-import org.apache.beam.sdk.io.cassandra.CassandraIO;
-import org.apache.beam.sdk.io.cassandra.CassandraRow;
 import org.apache.beam.sdk.io.jms.JmsIO;
-import org.apache.beam.sdk.io.kafka.KafkaIO;
-import org.apache.beam.sdk.io.kafka.KafkaRecord;
+import org.apache.beam.sdk.io.jms.JmsRecord;
 import org.apache.beam.sdk.io.mongodb.MongoDbIO;
 import org.apache.beam.sdk.options.*;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
-import org.apache.beam.sdk.values.PDone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 
 import javax.jms.ConnectionFactory;
 
-public class EventsToIOs {
+public class KafkaToMultipleIOs {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EventsToIOs.class);
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaToMultipleIOs.class);
     /**
      * Specific pipeline options.
      */
@@ -122,6 +113,7 @@ public class EventsToIOs {
         }
         LOG.info(options.toString());
 
+        ConnectionFactory connFactory = new ActiveMQConnectionFactory();
         Pipeline pipeline = Pipeline.create(options);
 
         // now we connect to the queue and process every event
@@ -142,19 +134,31 @@ public class EventsToIOs {
 //                    c.output(c.element().getKV().getValue().toString());
 //                }
 //            }));
-            .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()));
+            .apply("ReadFromJms", JmsIO.read()
+                            .withConnectionFactory(connFactory)
+                            .withQueue("gdelt")
+//                .withMaxNumRecords(1000)
+//                    .withMaxNumRecords(Long.MAX_VALUE)
+            )
+            .apply("ExtractPayload", ParDo.of(new DoFn<JmsRecord, String>() {
+                @ProcessElement
+                public void processElement(ProcessContext c) throws Exception {
+                    c.output(c.element().getPayload());
+                }
+            })
+        );
 
 
         // We filter the events for a given country (IN=India) and send them to their own JMS queue
-        ConnectionFactory connFactory = new ActiveMQConnectionFactory();
         data
             .apply("FilterByCountry", Filter.by(new SerializableFunction<String, Boolean>() {
                 public Boolean apply(String input) {
                     return getCountry(input).equals("IN");
                 }
             }))
-            .apply("WriteToJms",
-                JmsIO.write().withConnectionFactory(connFactory).withQueue(options.getJMSQueue()));
+            .apply("WriteToJms", JmsIO.write()
+                .withConnectionFactory(connFactory)
+                .withQueue(options.getJMSQueue()));
 
         // we count the events per country and register them in Mongo
         data
@@ -175,27 +179,28 @@ public class EventsToIOs {
                 return "{\"" + input.getKey() + "\": " + input.getValue() + "}";
                 }
             }))
-//            .apply("WriteToMongo",
-//                MongoDbIO.write()
-//                    .withUri(options.getMongoUri())
-//                    .withDatabase(options.getMongoDatabase())
-//                    .withCollection(options.getMongoCollection()));
+            .apply("WriteToMongo",
+                MongoDbIO.write()
+                    .withUri(options.getMongoUri())
+                    .withDatabase(options.getMongoDatabase())
+                    .withCollection(options.getMongoCollection()));
 
-            .apply("ToCassandraRow", ParDo.of(new DoFn<String, CassandraRow>() {
-                @ProcessElement
-                public void processElement(ProcessContext c) {
-                    CassandraRow row = new CassandraRow();
-                    row.add("name", CassandraColumnDefinition.Type.TEXT, c.element());
-                    c.output(row);
-                }
-            }))
-            .apply("WriteToCassandra",
-                    CassandraIO.write()
-                        .withHost("localhost")
-                        .withKeyspace("gdelt")
-                        .withTable("percountry")
-                        .withConfig(new HashMap<String, String>())
-                        .withColumns("ab"));
+//            .apply("ToCassandraRow", ParDo.of(new DoFn<String, CassandraRow>() {
+//                @ProcessElement
+//                public void processElement(ProcessContext c) {
+//                    CassandraRow row = new CassandraRow();
+//                    row.add("name", CassandraColumnDefinition.Type.TEXT, c.element());
+//                    c.output(row);
+//                }
+//            }))
+//            .apply("WriteToCassandra",
+//                    CassandraIO.write()
+//                        .withHosts(new String[] {"localhost"})
+//                        .withKeyspace("gdelt")
+////                        .withTable("percountry")
+////                        .withConfig(new HashMap<String, String>())
+////                        .withColumns("ab")
+//            );
 
         pipeline.run();
     }
