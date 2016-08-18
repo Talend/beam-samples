@@ -53,6 +53,7 @@ public class IngestToActiveMQ {
         void setInput(String value);
 
         @Description("JMS Broker")
+        @Default.String("tcp://localhost:61616")
         String getJMSBroker();
         void setJMSBroker(String value);
 
