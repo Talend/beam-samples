@@ -19,17 +19,25 @@ package org.apache.beam.samples;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.beam.sdk.Pipeline;
+import org.apache.beam.sdk.coders.StringUtf8Coder;
+import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.io.jms.JmsIO;
 import org.apache.beam.sdk.io.jms.JmsRecord;
+import org.apache.beam.sdk.io.kafka.KafkaIO;
+import org.apache.beam.sdk.io.kafka.KafkaRecord;
 import org.apache.beam.sdk.io.mongodb.MongoDbIO;
 import org.apache.beam.sdk.options.*;
 import org.apache.beam.sdk.transforms.*;
+import org.apache.beam.sdk.transforms.windowing.FixedWindows;
+import org.apache.beam.sdk.transforms.windowing.Window;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
+import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.jms.ConnectionFactory;
@@ -51,6 +59,10 @@ public class KafkaToMultipleIOs {
         @Description("Input Path")
         String getInput();
         void setInput(String value);
+
+        @Description("Output Path")
+        String getOutput();
+        void setOutput(String value);
 
         @Description("Kafka Bootstrap Servers")
         @Default.String("localhost:9092")
@@ -113,72 +125,76 @@ public class KafkaToMultipleIOs {
         }
         LOG.info(options.toString());
 
-        ConnectionFactory connFactory = new ActiveMQConnectionFactory();
         Pipeline pipeline = Pipeline.create(options);
 
         // now we connect to the queue and process every event
         PCollection<String> data =
         pipeline
-//            .apply("ReadFromKafka", KafkaIO.read()
-//                .withBootstrapServers(options.getKafkaServer())
-//                .withTopics(Arrays.asList(options.getKafkaTopic()))
-////                .withConsumerFactoryFn(new ConsumerFactoryFn(topics, 10, numElements)) // 20 partitions
-//                .withKeyCoder(StringUtf8Coder.of())
-//                .withValueCoder(StringUtf8Coder.of())
+            .apply("ReadFromKafka", KafkaIO.read()
+                .withBootstrapServers(options.getKafkaServer())
+                .withTopics(Arrays.asList(options.getKafkaTopic()))
+//                .withConsumerFactoryFn(new ConsumerFactoryFn(topics, 10, numElements)) // 20 partitions
+                .withKeyCoder(StringUtf8Coder.of())
+                .withValueCoder(StringUtf8Coder.of())
 //                .withMaxNumRecords(1000)
-//            )
-//            .apply("ExtractPayload", ParDo.of(new DoFn<KafkaRecord, String>() {
-//                @ProcessElement
-//                public void processElement(ProcessContext c) throws Exception {
-//                    System.out.println(c.element().getKV().getValue().toString());
-//                    c.output(c.element().getKV().getValue().toString());
-//                }
-//            }));
-            .apply("ReadFromJms", JmsIO.read()
-                            .withConnectionFactory(connFactory)
-                            .withQueue("gdelt")
-//                .withMaxNumRecords(1000)
-//                    .withMaxNumRecords(Long.MAX_VALUE)
             )
-            .apply("ExtractPayload", ParDo.of(new DoFn<JmsRecord, String>() {
+            .apply("ExtractPayload", ParDo.of(new DoFn<KafkaRecord, String>() {
                 @ProcessElement
                 public void processElement(ProcessContext c) throws Exception {
-                    c.output(c.element().getPayload());
+                    c.output(c.element().getKV().getValue().toString());
                 }
-            })
+            }));
+//        data.apply("WriteReadFromJms", TextIO.Write.to(options.getOutput() + "kafka"));
+
+        PCollection<String> windowedData = data
+                .apply(Window.<String>into(
+                        FixedWindows.of(Duration.standardMinutes(240))));
+//        options.getWindowSize()
+
+        // We filter the events for a given country (IN=India) and send them to their given topic
+        final String country = "IN";
+        PCollection<String> eventsInIndia =
+            windowedData.apply("FilterByCountry", Filter.by(new SerializableFunction<String, Boolean>() {
+                public Boolean apply(String row) {
+                    return getCountry(row).equals(country);
+                }
+            }));
+
+        ConnectionFactory connFactory = new ActiveMQConnectionFactory();
+        eventsInIndia.apply("WriteToJms", JmsIO.write()
+            .withConnectionFactory(connFactory)
+            .withQueue("india")
         );
-
-
-        // We filter the events for a given country (IN=India) and send them to their own JMS queue
-        data
-            .apply("FilterByCountry", Filter.by(new SerializableFunction<String, Boolean>() {
-                public Boolean apply(String input) {
-                    return getCountry(input).equals("IN");
-                }
-            }))
-            .apply("WriteToJms", JmsIO.write()
-                .withConnectionFactory(connFactory)
-                .withQueue(options.getJMSQueue()));
+//        eventsInIndia.apply("WriteEventsInIndia", TextIO.Write.to(options.getOutput() + "india"));
 
         // we count the events per country and register them in Mongo
-        data
-            .apply("ExtractLocation", ParDo.of(new DoFn<String, String>() {
-                @ProcessElement
-                public void processElement(ProcessContext c) {
-                    c.output(getCountry(c.element()));
-                }
-            }))
-            .apply("FilterValidLocations", Filter.by(new SerializableFunction<String, Boolean>() {
-                public Boolean apply(String input) {
-                    return (!input.equals("NA") && !input.startsWith("-") && input.length() == 2);
-                }
-            }))
-            .apply("CountByLocation", Count.<String>perElement())
-            .apply("ConvertToJson", MapElements.via(new SimpleFunction<KV<String, Long>, String>() {
-                public String apply(KV<String, Long> input) {
-                return "{\"" + input.getKey() + "\": " + input.getValue() + "}";
-                }
-            }))
+        PCollection<String> windowedCount = windowedData
+                .apply("ExtractLocation", ParDo.of(new DoFn<String, String>() {
+                    @ProcessElement
+                    public void processElement(ProcessContext c) {
+                        c.output(getCountry(c.element()));
+                    }
+                }))
+                .apply("FilterValidLocations", Filter.by(new SerializableFunction<String, Boolean>() {
+                    public Boolean apply(String input) {
+                        return (!input.equals("NA") && !input.startsWith("-") && input.length() == 2);
+                    }
+                }))
+//            ;
+                .apply("CountByLocation", Count.<String>perElement())
+                .apply("ConvertToJson", MapElements.via(new SimpleFunction<KV<String, Long>, String>() {
+                    public String apply(KV<String, Long> input) {
+                        return "{\"" + input.getKey() + "\": " + input.getValue() + "}";
+                    }
+                }));
+
+        windowedCount
+            .apply("WriteToJms", JmsIO.write()
+                .withConnectionFactory(connFactory)
+                .withQueue("count")
+            );
+
+        windowedCount
             .apply("WriteToMongo",
                 MongoDbIO.write()
                     .withUri(options.getMongoUri())
