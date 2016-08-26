@@ -30,6 +30,7 @@
 
     <modules>
         <module>camel</module>
+        <module>beam</module>
     </modules>
 
 </project>
