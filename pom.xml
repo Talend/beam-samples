@@ -48,6 +48,7 @@
     <modules>
         <module>EventsByLocation</module>
         <module>EventsToIOs</module>
+        <module>IoTEventsProcess</module>
     </modules>
 
     <dependencyManagement>
