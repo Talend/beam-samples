@@ -38,6 +38,9 @@
     </repositories>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
         <beam.version>0.3.0-incubating-SNAPSHOT</beam.version>
         <hadoop.version>2.7.2</hadoop.version>
         <jackson.version>2.7.2</jackson.version>
@@ -106,6 +109,12 @@
             <dependency>
                 <groupId>org.apache.beam</groupId>
                 <artifactId>beam-sdks-java-io-kafka</artifactId>
+                <version>${beam.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.beam</groupId>
+                <artifactId>beam-sdks-java-io-google-cloud-platform</artifactId>
                 <version>${beam.version}</version>
             </dependency>
 
