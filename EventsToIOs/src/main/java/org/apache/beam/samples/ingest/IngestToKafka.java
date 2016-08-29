@@ -28,7 +28,6 @@ import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 
 import org.apache.beam.sdk.transforms.DoFn;
-import org.apache.beam.sdk.transforms.ParDo;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.slf4j.Logger;
@@ -51,7 +50,8 @@ public class IngestToKafka {
         public void processElement(ProcessContext c) {
             // Generate a timestamp that falls somewhere in the past RAND_RANGE hours.
             long randMillis = (long) (Math.random() * RAND_RANGE.getMillis());
-            Instant randomTimestamp = minTimestamp.plus(randMillis);
+//            Instant randomTimestamp = minTimestamp.plus(randMillis);
+            Instant randomTimestamp = minTimestamp.minus(randMillis);
             /**
              * Concept #2: Set the data element with that timestamp.
              */
@@ -103,7 +103,8 @@ public class IngestToKafka {
         Pipeline pipeline = Pipeline.create(options);
         pipeline
             .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
-            .apply(ParDo.of(new AddTimestampFn()))
+//            .apply(ParDo.of(new AddTimestampFn()))
+//            .apply(Trace.Log.<String>print())
             .apply("WriteToKafka", KafkaIO.write()
                 .withBootstrapServers(options.getKafkaServer())
                 .withTopic(options.getKafkaTopic())
