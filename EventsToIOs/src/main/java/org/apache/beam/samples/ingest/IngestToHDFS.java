@@ -18,48 +18,24 @@
 package org.apache.beam.samples.ingest;
 
 import org.apache.beam.sdk.Pipeline;
-import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.io.TextIO;
-import org.apache.beam.sdk.io.kafka.KafkaIO;
+import org.apache.beam.sdk.io.Write;
+import org.apache.beam.sdk.io.hdfs.HDFSFileSink;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.DefaultValueFactory;
 import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
-
-import org.apache.beam.sdk.transforms.DoFn;
-import org.joda.time.Duration;
-import org.joda.time.Instant;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class IngestToKafka {
+public class IngestToHDFS {
 
-    static class AddTimestampFn extends DoFn<String, String> {
-        private static final Duration RAND_RANGE = Duration.standardHours(24);
-        private final Instant minTimestamp;
-
-        AddTimestampFn() {
-            this.minTimestamp = new Instant(System.currentTimeMillis());
-        }
-
-        @ProcessElement
-        public void processElement(ProcessContext c) {
-            // Generate a timestamp that falls somewhere in the past RAND_RANGE hours.
-            long randMillis = (long) (Math.random() * RAND_RANGE.getMillis());
-//            Instant randomTimestamp = minTimestamp.plus(randMillis);
-            Instant randomTimestamp = minTimestamp.minus(randMillis);
-            /**
-             * Concept #2: Set the data element with that timestamp.
-             */
-            c.outputWithTimestamp(c.element(), new Instant(randomTimestamp));
-        }
-    }
-
-    private static final Logger LOG = LoggerFactory.getLogger(IngestToKafka.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IngestToHDFS.class);
     /**
      * Specific pipeline options.
      */
@@ -75,15 +51,9 @@ public class IngestToKafka {
         String getInput();
         void setInput(String value);
 
-        @Description("Kafka Bootstrap Servers")
-        @Default.String("localhost:9092")
-        String getKafkaServer();
-        void setKafkaServer(String value);
-
-        @Description("Kafka Topic Name")
-        @Default.String("gdelt")
-        String getKafkaTopic();
-        void setKafkaTopic(String value);
+        @Description("Output Path")
+        String getOutput();
+        void setOutput(String value);
 
         class GDELTFileFactory implements DefaultValueFactory<String> {
             public String create(PipelineOptions options) {
@@ -101,16 +71,11 @@ public class IngestToKafka {
         LOG.info(options.toString());
 
         Pipeline pipeline = Pipeline.create(options);
+        //TODO: Change for HadoopIO once it is ready
         pipeline
             .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
-//            .apply(ParDo.of(new AddTimestampFn()))
-//            .apply(Trace.Log.<String>print())
-            .apply("WriteToKafka", KafkaIO.write()
-                .withBootstrapServers(options.getKafkaServer())
-                .withTopic(options.getKafkaTopic())
-                .withKeyCoder(StringUtf8Coder.of())
-                .withValueCoder(StringUtf8Coder.of())
-                .values());
+            .apply("WriteToHDFS", Write.to(new HDFSFileSink(options.getOutput(), TextOutputFormat.class))
+        );
         pipeline.run();
     }
 }
