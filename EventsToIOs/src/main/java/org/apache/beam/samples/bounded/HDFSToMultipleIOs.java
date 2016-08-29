@@ -17,29 +17,30 @@
  */
 package org.apache.beam.samples.bounded;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.beam.samples.unbounded.KafkaToCassandra;
 import org.apache.beam.sdk.Pipeline;
-import org.apache.beam.sdk.io.TextIO;
+import org.apache.beam.sdk.io.Read;
+import org.apache.beam.sdk.io.hdfs.HDFSFileSource;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.DefaultValueFactory;
 import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
-import org.apache.beam.sdk.transforms.Filter;
-import org.apache.beam.sdk.transforms.SerializableFunction;
+import org.apache.beam.sdk.transforms.DoFn;
+import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.jms.ConnectionFactory;
+public class HDFSToMultipleIOs {
 
-public class FSToMultipleIOs {
-
-    private static final Logger LOG = LoggerFactory.getLogger(KafkaToCassandra.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HDFSToMultipleIOs.class);
     /**
      * Specific pipeline options.
      */
@@ -58,6 +59,16 @@ public class FSToMultipleIOs {
         @Description("Output Path")
         String getOutput();
         void setOutput(String value);
+
+        @Description("Kafka Bootstrap Servers")
+        @Default.String("localhost:9092")
+        String getKafkaServer();
+        void setKafkaServer(String value);
+
+        @Description("Kafka Topic Name")
+        @Default.String("gdelt")
+        String getKafkaTopic();
+        void setKafkaTopic(String value);
 
         @Description("JMS server")
         @Default.String("tcp://localhost:61616")
@@ -103,14 +114,6 @@ public class FSToMultipleIOs {
         return "NA";
     }
 
-    public static PCollection<String> filterByCountry(PCollection<String> data, final String country) {
-        return data.apply("FilterByCountry", Filter.by(new SerializableFunction<String, Boolean>() {
-            public Boolean apply(String row) {
-                return getCountry(row).equals(country);
-            }
-        }));
-    }
-
     public static void main(String[] args) throws Exception {
         Options options = PipelineOptionsFactory.fromArgs(args).withValidation().as(Options.class);
         if (options.getInput() == null) {
@@ -118,38 +121,63 @@ public class FSToMultipleIOs {
         }
         LOG.info(options.toString());
 
-        ConnectionFactory connFactory = new ActiveMQConnectionFactory();
         Pipeline pipeline = Pipeline.create(options);
 
+        PCollection<String> data = pipeline
+                .apply("ReadFromHDFS", Read.from(
+                        HDFSFileSource.from(options.getInput(),
+                                TextInputFormat.class, LongWritable.class, Text.class))
+                )
+                .apply("ExtractPayload", ParDo.of(new DoFn<KV<LongWritable, Text>, String>() {
+                    @ProcessElement
+                    public void processElement(ProcessContext c) throws Exception {
+                        c.output(c.element().getValue().toString());
+                    }
+                }));
+
         // now we connect to the queue and process every event
-//        PCollection<String> data =
-//            pipeline
-//                .apply("ReadFromJms", JmsIO.read()
-//                                .withConnectionFactory(connFactory)
-//                                .withQueue("gdelt")
+//        PCollection<String> data = pipeline
+//            .apply("ReadFromKafka", KafkaIO.read()
+//                .withBootstrapServers(options.getKafkaServer())
+//                .withTopics(Arrays.asList(options.getKafkaTopic()))
+////                .withConsumerFactoryFn(new ConsumerFactoryFn(topics, 10, numElements)) // 20 partitions
+//                .withKeyCoder(StringUtf8Coder.of())
+//                .withValueCoder(StringUtf8Coder.of())
 ////                .withMaxNumRecords(1000)
-////                    .withMaxNumRecords(Long.MAX_VALUE)
-//                )
-//                .apply("ExtractPayload", ParDo.of(new DoFn<JmsRecord, String>() {
-//                    @ProcessElement
-//                    public void processElement(ProcessContext c) throws Exception {
-//                        c.output(c.element().getPayload());
-//                    }
-//                })
-//        );
-
-
-        PCollection<String> data = pipeline.apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()));
-        // We filter the events for a given country (IN=India) and send them to their own JMS queue
-        PCollection<String> eventsInIndia = filterByCountry(data, "IN");
+//            )
+//            .apply("ExtractPayload", ParDo.of(new DoFn<KafkaRecord, String>() {
+//                @ProcessElement
+//                public void processElement(ProcessContext c) throws Exception {
+//                    c.output(c.element().getKV().getValue().toString());
+//                }
+//            }));
+//            .apply(ParDo.of(new IngestToKafka.AddTimestampFn()));
+//
+//        PCollection<String> windowedData = data
+//                .apply(Window.<String>into(
+//                        FixedWindows.of(Duration.standardMinutes(240))));
+////        options.getWindowSize()
+//
+//        windowedData.apply(Trace.Log.<String>print());
+//
+//        // We filter the events for a given country (IN=India) and send them to their given topic
+//        final String country = "IN";
+//        PCollection<String> eventsInIndia =
+//            windowedData.apply("FilterByCountry", Filter.by(new SerializableFunction<String, Boolean>() {
+//                public Boolean apply(String row) {
+//                    return getCountry(row).equals(country);
+//                }
+//            }));
+//
+//        ConnectionFactory connFactory = new ActiveMQConnectionFactory();
 //        eventsInIndia.apply("WriteToJms", JmsIO.write()
-//                        .withConnectionFactory(connFactory)
-//                        .withQueue(options.getJMSQueue()));
-        eventsInIndia.apply("WriteEventsInIndia", TextIO.Write.to(options.getOutput() + "india"));
-
+//            .withConnectionFactory(connFactory)
+//            .withQueue("india")
+//        );
+////        eventsInIndia.apply("WriteEventsInIndia", TextIO.Write.to(options.getOutput() + "india"));
+//
 //        // we count the events per country and register them in Mongo
-//        PCollection<String> countByCountry =
-//            data
+//        PCollection<String> windowedCount = windowedData
 //                .apply("ExtractLocation", ParDo.of(new DoFn<String, String>() {
 //                    @ProcessElement
 //                    public void processElement(ProcessContext c) {
@@ -161,37 +189,26 @@ public class FSToMultipleIOs {
 //                        return (!input.equals("NA") && !input.startsWith("-") && input.length() == 2);
 //                    }
 //                }))
+////            ;
 //                .apply("CountByLocation", Count.<String>perElement())
-//                .apply("Top", Top.of(10, new SerializableComparator<KV<String, Long>>() {
-//                        @Override
-//                        public int compare(KV<String, Long> o1, KV<String, Long> o2) {
-//                            return Long.compare(o1.getValue(), o2.getValue());
-//                        }
-//                    }).withoutDefaults())
-////                .apply("Flat", Flatten.<KV<String, Long>>iterables()) // ?
-//                .apply("fsfd", MapElements.via(new SimpleFunction<List<KV<String, Long>>, String>() {
-//                    @Override
-//                    public String apply(List<KV<String, Long>> kvs) {
-//                        String x = "";
-//                        for (KV<String, Long> kv : kvs) {
-//                            x += "{\"" + kv.getKey() + "\": " + kv.getValue() + "}" + "\r\n";
-//                        }
-//                        return x;
+//                .apply("ConvertToJson", MapElements.via(new SimpleFunction<KV<String, Long>, String>() {
+//                    public String apply(KV<String, Long> input) {
+//                        return "{\"" + input.getKey() + "\": " + input.getValue() + "}";
 //                    }
 //                }));
-////                .apply("ConvertToJson", MapElements.via(new SimpleFunction<KV<String, Long>, String>() {
-////                    public String apply(KV<String, Long> input) {
-////                        return "{\"" + input.getKey() + "\": " + input.getValue() + "}";
-////                    }
-////                }));
 //
-//        countByCountry.apply("WriteCountByCountry", TextIO.Write.to(options.getOutput() + "count")); ///"/tmp/beam/beam-samples/count"
+//        windowedCount
+//            .apply("WriteToJms", JmsIO.write()
+//                .withConnectionFactory(connFactory)
+//                .withQueue("count")
+//            );
 
+//        windowedCount
 //            .apply("WriteToMongo",
-//                    MongoDbIO.write()
-//                            .withUri(options.getMongoUri())
-//                            .withDatabase(options.getMongoDatabase())
-//                            .withCollection(options.getMongoCollection()));
+//                MongoDbIO.write()
+//                    .withUri(options.getMongoUri())
+//                    .withDatabase(options.getMongoDatabase())
+//                    .withCollection(options.getMongoCollection()));
 
 //            .apply("ToCassandraRow", ParDo.of(new DoFn<String, CassandraRow>() {
 //                @ProcessElement
@@ -210,10 +227,7 @@ public class FSToMultipleIOs {
 ////                        .withColumns("ab")
 //            );
 
-        long startTime = new Date().getTime();
         pipeline.run();
-        long endTime = new Date().getTime();
-        System.out.println("Pipeline executed by " + pipeline.getOptions().getRunner().getSimpleName() + " took: " + (endTime - startTime) + " ms.");
     }
 
 }

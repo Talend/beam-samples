@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class PubSubToGoogleIOs {
+public class PubSubToBigTable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PubSubToGoogleIOs.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PubSubToBigTable.class);
     /**
      * Specific pipeline options.
      */

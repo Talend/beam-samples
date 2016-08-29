@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.beam.samples.unbounded;
+package org.apache.beam.samples.bounded;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.beam.samples.unbounded.KafkaToCassandra;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.jms.JmsIO;
 import org.apache.beam.sdk.io.jms.JmsRecord;
@@ -112,8 +113,10 @@ public class ActiveMQToMongo {
                 .apply("ReadFromJms", JmsIO.read()
                     .withConnectionFactory(connFactory)
                     .withQueue(options.getJMSQueue())
-                    // TODO: temp hack to makes the source unbounded
-                    .withMaxNumRecords(Long.MAX_VALUE)
+                    // hack to make the source unbounded, notice that this require different
+                    // processing semantics
+//                    .withMaxNumRecords(Long.MAX_VALUE)
+                    .withMaxNumRecords(100)
                 )
                 .apply("ExtractPayload", ParDo.of(new DoFn<JmsRecord, String>() {
                     @ProcessElement
