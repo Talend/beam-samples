@@ -57,4 +57,3 @@ brokers, filesystems and databases.
 
 We provide a convinient way to have such infrastructura available using docker-compose.
 
-

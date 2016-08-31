@@ -23,7 +23,9 @@ import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.io.jms.JmsIO;
 import org.apache.beam.sdk.io.jms.JmsRecord;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
+import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.MapElements;
+import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.transforms.SimpleFunction;
 
 import javax.jms.ConnectionFactory;
@@ -36,12 +38,13 @@ public class JmsIoTProcessing {
         ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 
         pipeline.apply(JmsIO.read().withConnectionFactory(connectionFactory).withQueue("iot"))
-            .apply(MapElements.via(new SimpleFunction<JmsRecord, String>() {
-                public String apply(JmsRecord input) {
-                    return input.getPayload();
+            .apply(ParDo.of(new DoFn<JmsRecord, String>() {
+                @ProcessElement
+                public void processElement(ProcessContext c) {
+                    System.out.println(c.element().getPayload());
+                    c.output(c.element().getPayload());
                 }
-            }))
-            .apply(TextIO.Write.to("/tmp/test"));
+            }));
 
         pipeline.run();
     }
