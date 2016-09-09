@@ -55,6 +55,7 @@
         <module>EventsByLocation</module>
         <module>EventsToIOs</module>
         <module>IoTEventsProcess</module>
+        <module>GoodAndBadGroupReduce</module>
     </modules>
 
     <dependencyManagement>
