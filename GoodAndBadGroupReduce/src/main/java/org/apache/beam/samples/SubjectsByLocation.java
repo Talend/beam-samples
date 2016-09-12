@@ -1,6 +1,7 @@
 package org.apache.beam.samples;
 
 import org.apache.beam.sdk.Pipeline;
+import org.apache.beam.sdk.coders.*;
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.options.*;
 import org.apache.beam.sdk.transforms.*;
@@ -143,6 +144,7 @@ public class SubjectsByLocation {
                     countriesSubjectsPairs.apply("groupSubjectsByCountry", GroupByKey.<String, String>create());
 
             PCollection<KV<String, HashMap<String, Long>>> countriesConcernsPairs =
+/*
                     subjectsByCountry.apply("eventsBySubjects", MapElements.via(
                             new SimpleFunction<KV<String, Iterable<String>>, KV<String, HashMap<String, Long>>>() {
                                 @Override
@@ -155,6 +157,23 @@ public class SubjectsByLocation {
                                     return KV.of(kv.getKey(), eventsBySubjects);
                                 }
                             }));
+*/
+            //            countriesConcernsPairs.setCoder(KvCoder.of(StringUtf8Coder.of(), MapCoder.of(StringUtf8Coder.of(), VarLongCoder.of())));
+
+                    subjectsByCountry.apply(
+                            ParDo.of(new DoFn<KV<String, Iterable<String>>, KV<String, HashMap<String, Long>>>() {
+                                @ProcessElement
+                                public void processElement(ProcessContext c) {
+                                    KV<String, Iterable<String>> kv = c.element();
+                                    HashMap<String, Long> eventsBySubjects = new HashMap();
+                                    for (String subject : kv.getValue()) {
+                                        Long nbOfEvents = eventsBySubjects.get(subject);
+                                        eventsBySubjects.put(subject, nbOfEvents++);
+                                    }
+                                    c.output(KV.of(kv.getKey(), eventsBySubjects));
+                                }
+                            }));
+/*
             PCollection<String> result = countriesConcernsPairs.apply("formatOutput", MapElements.via(
                     new SimpleFunction<KV<String, HashMap<String, Long>>, String>() {
                         @Override
@@ -172,12 +191,34 @@ public class SubjectsByLocation {
                             return str.toString();
                         }
                     }));
+*/
 
+            PCollection<String> result = countriesConcernsPairs.apply("formatOutput", ParDo.of(
+                    new DoFn<KV<String, HashMap<String, Long>>, String>() {
+                        @ProcessElement
+                        public void processElement(ProcessContext c) {
+                            KV<String, HashMap<String, Long>> kv = c.element();
+                            StringBuilder str = new StringBuilder();
+                            String country = kv.getKey();
+                            str.append(country).append(" ");
+                            HashMap<String, Long> concerns = kv.getValue();
+                                for (String subject : concerns.keySet()) {
+                                str.append(subject);
+                                str.append(" ");
+                                Long eventsNb = concerns.get(subject);
+                                str.append(eventsNb);
+                            }
+                            c.output(str.toString());
+                        }
+                    }));
             return result;
 
         }
 
     }
+
+
+
 
     public static void main(String[] args) throws Exception {
         Options options = PipelineOptionsFactory.fromArgs(args).withValidation().as(Options.class);
@@ -199,7 +240,6 @@ public class SubjectsByLocation {
         Instant end = Instant.now();
         long runningTimeForGoodPipeline = end.getMillis() - start.getMillis();
 
-/*
         Pipeline badPipeline = Pipeline.create(options);
         badPipeline.apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
                 .apply("TakeASample", Sample.<String>any(10000))
@@ -210,14 +250,11 @@ public class SubjectsByLocation {
         badPipeline.run();
         end = Instant.now();
         long runningTimeForBadPipeline = end.getMillis() - start.getMillis();
-*/
 
         LOG.info("Good pipeline runs in " + String.valueOf(runningTimeForGoodPipeline) + " ms");
-/*
         LOG.info("Bad pipeline runs in " + String.valueOf(runningTimeForBadPipeline) + " ms");
         LOG.info("Bad pipeline (with groupBy) is slower of " + String.valueOf(
                 runningTimeForBadPipeline - runningTimeForGoodPipeline) + " ms");
-*/
 
     }
 
