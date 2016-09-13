@@ -143,7 +143,13 @@ public class SubjectsByLocation {
                                               public KV<String, String> apply(String s) {
                                                   return KV.of(getCountry(s), getSubject(s));
                                               }
-                                          }));
+                                          }))
+            .apply("FilterValidLocations", Filter.by(new SerializableFunction<KV<String, String>, Boolean>() {
+                public Boolean apply(KV<String,String> input) {
+                    String country = input.getKey();
+                    return (!country.equals("NA") && !country.startsWith("-") && country.length() == 2);
+                }
+            }));
 
             //group subjects by country => bad because it shuffles subject data to group them by country (bandwidth use + slowing pipeline).
             // And if a country has many events in the dataset, a given worker will end up
@@ -179,7 +185,7 @@ public class SubjectsByLocation {
                                         Long nbOfEvents = eventsBySubjects.get(subject);
                                         if (nbOfEvents == null)
                                             nbOfEvents = 0L;
-                                        eventsBySubjects.put(subject, nbOfEvents++);
+                                        eventsBySubjects.put(subject, ++nbOfEvents);
                                     }
                                     String country = kv.getKey();
                                     c.output(KV.of(country, eventsBySubjects));
