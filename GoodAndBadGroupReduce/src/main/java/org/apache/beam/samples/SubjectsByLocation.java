@@ -90,7 +90,7 @@ public class SubjectsByLocation {
         public PCollection<String> apply(PCollection<String> inputCollection) {
 
             PCollection<String> compositeKeys =
-                    inputCollection.apply("extractCompositeKey", ParDo.of(new DoFn<String, String>() {
+                    inputCollection.apply("ExtractCompositeKey", ParDo.of(new DoFn<String, String>() {
                         @ProcessElement
                         public void processElement(ProcessContext c) {
                             c.output(getCompositeKey(c.element()));
@@ -101,7 +101,7 @@ public class SubjectsByLocation {
                         }
                     }));
             PCollection<KV<String, Long>> compositesEventsPairs =
-                    compositeKeys.apply("eventsByCompositeKey", Count.<String>perElement());
+                    compositeKeys.apply("GetEventsByCompositeKey", Count.<String>perElement());
 
             PCollection<String> result = compositesEventsPairs.apply("FormatOutput", MapElements.via(
                     new SimpleFunction<KV<String, Long>, String>() {
@@ -125,7 +125,6 @@ public class SubjectsByLocation {
     private static class subjectsByLocationTransformBad extends PTransform<PCollection<String>, PCollection<String>> {
 
         private static class Concerns extends HashMap<String, Long> {
-
             public static Coder getCoder() {
                 return MapCoder.of(StringUtf8Coder.of(), VarLongCoder.of());
             }
@@ -137,19 +136,21 @@ public class SubjectsByLocation {
         public PCollection<String> apply(PCollection<String> inputCollection) {
 
             PCollection<KV<String, String>> countriesSubjectsPairs =
-                    inputCollection.apply("extractCountrySubjectPairs",
+                    inputCollection.apply("ExtractCountrySubjectPairs",
                                           MapElements.via(new SimpleFunction<String, KV<String, String>>() {
                                               @Override
                                               public KV<String, String> apply(String s) {
                                                   return KV.of(getCountry(s), getSubject(s));
                                               }
                                           }))
-            .apply("FilterValidLocations", Filter.by(new SerializableFunction<KV<String, String>, Boolean>() {
-                public Boolean apply(KV<String,String> input) {
-                    String country = input.getKey();
-                    return (!country.equals("NA") && !country.startsWith("-") && country.length() == 2);
-                }
-            }));
+                            .apply("FilterValidLocations",
+                                   Filter.by(new SerializableFunction<KV<String, String>, Boolean>() {
+                                       public Boolean apply(KV<String, String> input) {
+                                           String country = input.getKey();
+                                           return (!country.equals("NA") && !country.startsWith("-")
+                                                   && country.length() == 2);
+                                       }
+                                   }));
 
             //group subjects by country => bad because it shuffles subject data to group them by country (bandwidth use + slowing pipeline).
             // And if a country has many events in the dataset, a given worker will end up
@@ -159,23 +160,7 @@ public class SubjectsByLocation {
                     countriesSubjectsPairs.apply("GroupSubjectsByCountry", GroupByKey.<String, String>create());
 
             PCollection<KV<String, Concerns>> countriesConcernsPairs =
-/*
-                    subjectsByCountry.apply("eventsBySubjects", MapElements.via(
-                            new SimpleFunction<KV<String, Iterable<String>>, KV<String, HashMap<String, Long>>>() {
-                                @Override
-                                public KV<String, HashMap<String, Long>> apply(KV<String, Iterable<String>> kv) {
-                                    HashMap<String, Long> eventsBySubjects = new HashMap();
-                                    for (String subject : kv.getValue()) {
-                                        Long nbOfEvents = eventsBySubjects.get(subject);
-                                        eventsBySubjects.put(subject, nbOfEvents++);
-                                    }
-                                    return KV.of(kv.getKey(), eventsBySubjects);
-                                }
-                            }));
-*/
-                    //            countriesConcernsPairs.setCoder(KvCoder.of(StringUtf8Coder.of(), MapCoder.of(StringUtf8Coder.of(), VarLongCoder.of())));
-
-                    subjectsByCountry.apply(
+                    subjectsByCountry.apply("CountEventsBySubjetsByCountry",
                             ParDo.of(new DoFn<KV<String, Iterable<String>>, KV<String, Concerns>>() {
                                 @ProcessElement
                                 public void processElement(ProcessContext c) {
@@ -192,26 +177,6 @@ public class SubjectsByLocation {
                                 }
                             }));
             countriesConcernsPairs.setCoder(KvCoder.of(StringUtf8Coder.of(), Concerns.getCoder()));
-/*
-            PCollection<String> result = countriesConcernsPairs.apply("formatOutput", MapElements.via(
-                    new SimpleFunction<KV<String, HashMap<String, Long>>, String>() {
-                        @Override
-                        public String apply(KV<String, HashMap<String, Long>> kv) {
-                            StringBuilder str = new StringBuilder();
-                            String country = kv.getKey();
-                            str.append(country).append(" ");
-                            HashMap<String, Long> concerns = kv.getValue();
-                            for (String subject : concerns.keySet()) {
-                                str.append(subject);
-                                str.append(" ");
-                                Long eventsNb = concerns.get(subject);
-                                str.append(eventsNb);
-                            }
-                            return str.toString();
-                        }
-                    }));
-*/
-
             PCollection<String> result = countriesConcernsPairs.apply("FormatOutput", ParDo.of(
                     new DoFn<KV<String, Concerns>, String>() {
                         @ProcessElement
@@ -251,17 +216,16 @@ public class SubjectsByLocation {
         Pipeline goodPipeline = Pipeline.create(options);
         goodPipeline.apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
                 .apply("TakeASample", Sample.<String>any(10000))
-                .apply("subjectsByLocation", new SubjectsByLocationTransformGood())
+                .apply("GetSubjectsByLocation", new SubjectsByLocationTransformGood())
                 .apply("WriteResults", TextIO.Write.to(options.getOutput() + "good/"));
         Instant start = Instant.now();
         goodPipeline.run();
         Instant end = Instant.now();
         long runningTimeForGoodPipeline = end.getMillis() - start.getMillis();
-
         Pipeline badPipeline = Pipeline.create(options);
         badPipeline.apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
                 .apply("TakeASample", Sample.<String>any(10000))
-                .apply("subjectsByLocation", new subjectsByLocationTransformBad())
+                .apply("GetSubjectsByLocation", new subjectsByLocationTransformBad())
                 .apply("WriteResults", TextIO.Write.to(options.getOutput() + "bad/"));
 
         start = Instant.now();
