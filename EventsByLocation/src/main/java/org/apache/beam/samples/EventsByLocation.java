@@ -22,6 +22,7 @@ import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.options.*;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
+import org.apache.beam.sdk.values.PCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ import java.util.Date;
 public class EventsByLocation {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventsByLocation.class);
+
     /**
      * Specific pipeline options.
      */
@@ -40,14 +42,17 @@ public class EventsByLocation {
         @Description("GDELT file date")
         @Default.InstanceFactory(GDELTFileFactory.class)
         String getDate();
+
         void setDate(String value);
 
         @Description("Input Path")
         String getInput();
+
         void setInput(String value);
 
         @Description("Output Path")
         String getOutput();
+
         void setOutput(String value);
 
         class GDELTFileFactory implements DefaultValueFactory<String> {
@@ -70,6 +75,7 @@ public class EventsByLocation {
     }
 
     public static void main(String[] args) throws Exception {
+
         Options options = PipelineOptionsFactory.fromArgs(args).withValidation().as(Options.class);
         if (options.getInput() == null) {
             options.setInput(Options.GDELT_EVENTS_URL + options.getDate() + ".export.CSV.zip");
@@ -80,27 +86,34 @@ public class EventsByLocation {
         LOG.info(options.toString());
 
         Pipeline pipeline = Pipeline.create(options);
-        pipeline
-            .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
-            .apply("TakeASample", Sample.<String>any(1000))
-            .apply("ExtractLocation", ParDo.of(new DoFn<String, String>() {
-                @ProcessElement
-                public void processElement(ProcessContext c) {
-                    c.output(getCountry(c.element()));
-                }
-            }))
-            .apply("FilterValidLocations", Filter.by(new SerializableFunction<String, Boolean>() {
-                public Boolean apply(String input) {
-                return (!input.equals("NA") && !input.startsWith("-") && input.length() == 2);
-                }
-            }))
-            .apply("CountByLocation", Count.<String>perElement())
-            .apply("ConvertToJson", MapElements.via(new SimpleFunction<KV<String, Long>, String>() {
-                public String apply(KV<String, Long> input) {
-                return "{\"" + input.getKey() + "\": " + input.getValue() + "}";
-                }
-            }))
-            .apply("WriteResults", TextIO.Write.to(options.getOutput()));
+        PCollection<String> read = pipeline
+                .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
+                .apply("TakeASample", Sample.<String>any(10));
+        read.apply(ParDo.of(new DoFn<String, Void>() {
+            @ProcessElement
+            public void processElement(ProcessContext c) {
+                LOG.info(String.format("READ C.ELEMENT |%s|", c.element()));
+            }
+        }));
+
+        read.apply("ExtractLocation", ParDo.of(new DoFn<String, String>() {
+            @ProcessElement
+            public void processElement(ProcessContext c) {
+                c.output(getCountry(c.element()));
+            }
+        }))
+                .apply("FilterValidLocations", Filter.by(new SerializableFunction<String, Boolean>() {
+                    public Boolean apply(String input) {
+                        return (!input.equals("NA") && !input.startsWith("-") && input.length() == 2);
+                    }
+                }))
+                .apply("CountByLocation", Count.<String>perElement())
+                .apply("ConvertToJson", MapElements.via(new SimpleFunction<KV<String, Long>, String>() {
+                    public String apply(KV<String, Long> input) {
+                        return "{\"" + input.getKey() + "\": " + input.getValue() + "}";
+                    }
+                }))
+                .apply("WriteResults", TextIO.Write.to(options.getOutput()));
 
         pipeline.run();
     }
