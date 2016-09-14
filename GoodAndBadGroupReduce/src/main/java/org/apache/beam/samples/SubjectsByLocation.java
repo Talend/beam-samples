@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * This class calculates the weight of each subjects in each location. The weigh is equal to the number of events
@@ -186,17 +187,19 @@ public class SubjectsByLocation {
                             StringBuilder str = new StringBuilder();
                             String country = kv.getKey();
                             Concerns concerns = kv.getValue();
-                            for (String subject : concerns.keySet()) {
+                            int i = 0;
+                            Set<String> subjects = concerns.keySet();
+                            for (String subject : subjects) {
                                 str.append(country);
                                 str.append(" ");
                                 str.append(subject);
                                 str.append(" ");
                                 Long eventsNb = concerns.get(subject);
                                 str.append(eventsNb);
-                                str.append("\n");
+                                if (i < subjects.size() - 1)
+                                    str.append("\n");
+                                i++;
                             }
-                            if (str.length() <= 2)
-                                LOG.debug("empty line");
                             c.output(str.toString());
                         }
                     }));
