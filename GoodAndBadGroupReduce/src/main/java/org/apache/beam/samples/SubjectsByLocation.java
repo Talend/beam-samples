@@ -143,11 +143,12 @@ public class SubjectsByLocation {
                                                   return KV.of(getCountry(s), getSubject(s));
                                               }
                                           }))
-                            .apply("FilterValidLocations",
+                            .apply("FilterValidPairs",
                                    Filter.by(new SerializableFunction<KV<String, String>, Boolean>() {
                                        public Boolean apply(KV<String, String> input) {
                                            String country = input.getKey();
-                                           return (!country.equals("NA") && !country.startsWith("-")
+                                           String subject = input.getValue();
+                                           return (!country.equals("NA") && !subject.equals("NA") && !country.startsWith("-")
                                                    && country.length() == 2);
                                        }
                                    }));
@@ -194,6 +195,8 @@ public class SubjectsByLocation {
                                 str.append(eventsNb);
                                 str.append("\n");
                             }
+                            if (str.length() <= 2)
+                                LOG.debug("empty line");
                             c.output(str.toString());
                         }
                     }));
