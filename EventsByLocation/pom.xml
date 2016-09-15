@@ -25,6 +25,26 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+<!--to test in v 0.2.0-incubating + replace ProcessElement in code-->
+    <!--
+    <properties>
+        <beam.version>0.2.0-incubating</beam.version>
+    </properties>
+    <repositories>
+        <repository>
+            <id>apache.snapshots</id>
+            <name>Apache Development Snapshot Repository</name>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+-->
+
     <artifactId>EventsByLocation</artifactId>
     <packaging>jar</packaging>
 
@@ -32,6 +52,7 @@
         <dependency>
             <groupId>org.apache.beam</groupId>
             <artifactId>beam-sdks-java-core</artifactId>
+            <version>${beam.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
