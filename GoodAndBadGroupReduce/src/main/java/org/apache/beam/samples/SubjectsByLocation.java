@@ -149,7 +149,8 @@ public class SubjectsByLocation {
                                        public Boolean apply(KV<String, String> input) {
                                            String country = input.getKey();
                                            String subject = input.getValue();
-                                           return (!country.equals("NA") && !subject.equals("NA") && !country.startsWith("-")
+                                           return (!country.equals("NA") && !subject.equals("NA")
+                                                   && !country.startsWith("-")
                                                    && country.length() == 2);
                                        }
                                    }));
@@ -163,21 +164,21 @@ public class SubjectsByLocation {
 
             PCollection<KV<String, Concerns>> countriesConcernsPairs =
                     subjectsByCountry.apply("CountEventsBySubjetsByCountry",
-                            ParDo.of(new DoFn<KV<String, Iterable<String>>, KV<String, Concerns>>() {
-                                @ProcessElement
-                                public void processElement(ProcessContext c) {
-                                    KV<String, Iterable<String>> kv = c.element();
-                                    Concerns eventsBySubjects = new Concerns();
-                                    for (String subject : kv.getValue()) {
-                                        Long nbOfEvents = eventsBySubjects.get(subject);
-                                        if (nbOfEvents == null)
-                                            nbOfEvents = 0L;
-                                        eventsBySubjects.put(subject, ++nbOfEvents);
-                                    }
-                                    String country = kv.getKey();
-                                    c.output(KV.of(country, eventsBySubjects));
-                                }
-                            }));
+                                            ParDo.of(new DoFn<KV<String, Iterable<String>>, KV<String, Concerns>>() {
+                                                @ProcessElement
+                                                public void processElement(ProcessContext c) {
+                                                    KV<String, Iterable<String>> kv = c.element();
+                                                    Concerns eventsBySubjects = new Concerns();
+                                                    for (String subject : kv.getValue()) {
+                                                        Long nbOfEvents = eventsBySubjects.get(subject);
+                                                        if (nbOfEvents == null)
+                                                            nbOfEvents = 0L;
+                                                        eventsBySubjects.put(subject, ++nbOfEvents);
+                                                    }
+                                                    String country = kv.getKey();
+                                                    c.output(KV.of(country, eventsBySubjects));
+                                                }
+                                            }));
             countriesConcernsPairs.setCoder(KvCoder.of(StringUtf8Coder.of(), Concerns.getCoder()));
             PCollection<String> result = countriesConcernsPairs.apply("FormatOutput", ParDo.of(
                     new DoFn<KV<String, Concerns>, String>() {
@@ -228,6 +229,7 @@ public class SubjectsByLocation {
         goodPipeline.run();
         Instant end = Instant.now();
         long runningTimeForGoodPipeline = end.getMillis() - start.getMillis();
+
         Pipeline badPipeline = Pipeline.create(options);
         badPipeline.apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
                 .apply("TakeASample", Sample.<String>any(10000))
@@ -239,10 +241,10 @@ public class SubjectsByLocation {
         end = Instant.now();
         long runningTimeForBadPipeline = end.getMillis() - start.getMillis();
 
-        LOG.info("Good pipeline runs in " + String.valueOf(runningTimeForGoodPipeline) + " ms");
-        LOG.info("Bad pipeline runs in " + String.valueOf(runningTimeForBadPipeline) + " ms");
-        LOG.info("Bad pipeline (with groupBy) is slower of " + String.valueOf(
-                runningTimeForBadPipeline - runningTimeForGoodPipeline) + " ms");
+        LOG.info(String.format("Good pipeline runs in %d ms", runningTimeForGoodPipeline));
+        LOG.info(String.format("Bad pipeline runs in %d ms", runningTimeForBadPipeline));
+        LOG.info(String.format("Bad pipeline (with groupBy) is slower of %d ms",
+                               runningTimeForBadPipeline - runningTimeForGoodPipeline));
 
     }
 
