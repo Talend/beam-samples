@@ -49,6 +49,8 @@
 
         <spark2.version>2.0.0</spark2.version>
         <spark2.jackson.version>2.6.5</spark2.jackson.version>
+
+        <apex.core.version>3.5.0-SNAPSHOT</apex.core.version>
     </properties>
 
     <modules>
@@ -292,6 +294,22 @@
                 </dependency>
             </dependencies>
         </profile>
+        <profile>
+            <id>apex-runner</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-runners-apex</artifactId>
+                    <version>${beam.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.apex</groupId>
+                    <artifactId>apex-engine</artifactId>
+                    <version>${apex.core.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
     </profiles>
 
     <build>
