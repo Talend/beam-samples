@@ -41,7 +41,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <beam.version>0.3.0-incubating-SNAPSHOT</beam.version>
+        <beam.version>0.4.0-incubating-SNAPSHOT</beam.version>
         <hadoop.version>2.7.2</hadoop.version>
         <jackson.version>2.7.2</jackson.version>
         <slf4j.version>1.7.13</slf4j.version>
