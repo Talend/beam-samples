@@ -27,6 +27,7 @@ import org.apache.beam.sdk.options.*;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,7 +141,7 @@ public class ActiveMQToMongo {
         );
 
         // we count the events per country and register them in Mongo
-        PCollection<String> countByCountry =
+        PCollection<Document> countByCountry =
             data
                 .apply("ExtractLocation", ParDo.of(new DoFn<String, String>() {
                     @ProcessElement
@@ -154,9 +155,9 @@ public class ActiveMQToMongo {
                     }
                 }))
                 .apply("CountByLocation", Count.<String>perElement())
-                .apply("ConvertToJson", MapElements.via(new SimpleFunction<KV<String, Long>, String>() {
-                    public String apply(KV<String, Long> input) {
-                        return "{\"" + input.getKey() + "\": " + input.getValue() + "}";
+                .apply("ConvertToJson", MapElements.via(new SimpleFunction<KV<String, Long>, Document>() {
+                    public Document apply(KV<String, Long> input) {
+                        return Document.parse("{\"" + input.getKey() + "\": " + input.getValue() + "}");
                     }
                 }));
         countByCountry
