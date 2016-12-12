@@ -88,7 +88,7 @@ public class SubjectsByLocation {
     private static class SubjectsByLocationTransformGood extends PTransform<PCollection<String>, PCollection<String>> {
 
         @Override
-        public PCollection<String> apply(PCollection<String> inputCollection) {
+        public PCollection<String> expand(PCollection<String> inputCollection) {
 
             PCollection<String> compositeKeys =
                     inputCollection.apply("ExtractCompositeKey", ParDo.of(new DoFn<String, String>() {
@@ -134,7 +134,7 @@ public class SubjectsByLocation {
         ;
 
         @Override
-        public PCollection<String> apply(PCollection<String> inputCollection) {
+        public PCollection<String> expand(PCollection<String> inputCollection) {
 
             PCollection<KV<String, String>> countriesSubjectsPairs =
                     inputCollection.apply("ExtractCountrySubjectPairs",
