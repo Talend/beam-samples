@@ -20,7 +20,7 @@ package org.apache.beam.samples.unbounded;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.coders.VoidCoder;
-import org.apache.beam.sdk.io.cassandra.CassandraIO;
+//import org.apache.beam.sdk.io.cassandra.CassandraIO;
 import org.apache.beam.sdk.io.jms.JmsIO;
 import org.apache.beam.sdk.io.kafka.KafkaIO;
 import org.apache.beam.sdk.io.kafka.KafkaRecord;
@@ -157,7 +157,7 @@ public class KafkaToCassandra {
                 }));
 
         //TODO Finish once CassandraIO is merged
-        countByCountry
+//        countByCountry
 //            .apply("ToCassandraRow", ParDo.of(new DoFn<String, CassandraRow>() {
 //                @ProcessElement
 //                public void processElement(ProcessContext c) {
@@ -166,14 +166,14 @@ public class KafkaToCassandra {
 //                    c.output(row);
 //                }
 //            }))
-            .apply("WriteToCassandra",
-                    CassandraIO.write()
-                        .withHosts(new String[] {"localhost"})
-                        .withKeyspace("gdelt")
-//                        .withTable("percountry")
-//                        .withConfig(new HashMap<String, String>())
-//                        .withColumns("ab")
-            );
+//            .apply("WriteToCassandra",
+//                    CassandraIO.write()
+//                        .withHosts(new String[] {"localhost"})
+//                        .withKeyspace("gdelt")
+////                        .withTable("percountry")
+////                        .withConfig(new HashMap<String, String>())
+////                        .withColumns("ab")
+//            );
 
         pipeline.run();
     }
