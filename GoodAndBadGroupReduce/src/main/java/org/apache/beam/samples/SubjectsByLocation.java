@@ -68,8 +68,9 @@ public class SubjectsByLocation {
 
     private static String getSubject(String row) {
         String[] fields = row.split("\\t+");
-        if (fields.length >= 7 && fields[6].length() > 0)
+        if (fields.length >= 7 && fields[6].length() > 0) {
             return fields[6];
+        }
         return "NA";
     }
 
@@ -131,8 +132,6 @@ public class SubjectsByLocation {
             }
         }
 
-        ;
-
         @Override
         public PCollection<String> expand(PCollection<String> inputCollection) {
 
@@ -171,8 +170,9 @@ public class SubjectsByLocation {
                                                     Concerns eventsBySubjects = new Concerns();
                                                     for (String subject : kv.getValue()) {
                                                         Long nbOfEvents = eventsBySubjects.get(subject);
-                                                        if (nbOfEvents == null)
+                                                        if (nbOfEvents == null) {
                                                             nbOfEvents = 0L;
+                                                        }
                                                         eventsBySubjects.put(subject, ++nbOfEvents);
                                                     }
                                                     String country = kv.getKey();
@@ -197,8 +197,9 @@ public class SubjectsByLocation {
                                 str.append(" ");
                                 Long eventsNb = concerns.get(subject);
                                 str.append(eventsNb);
-                                if (i < subjects.size() - 1)
+                                if (i < subjects.size() - 1) {
                                     str.append("\n");
+                                }
                                 i++;
                             }
                             c.output(str.toString());

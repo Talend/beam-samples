@@ -52,9 +52,7 @@ public class IngestToKafka {
             long randMillis = (long) (Math.random() * RAND_RANGE.getMillis());
 //            Instant randomTimestamp = minTimestamp.plus(randMillis);
             Instant randomTimestamp = minTimestamp.minus(randMillis);
-            /**
-             * Concept #2: Set the data element with that timestamp.
-             */
+            // Concept #2: Set the data element with that timestamp.
             c.outputWithTimestamp(c.element(), new Instant(randomTimestamp));
         }
     }
@@ -105,10 +103,10 @@ public class IngestToKafka {
             .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
 //            .apply(ParDo.of(new AddTimestampFn()))
 //            .apply(Trace.Log.<String>print())
-            .apply("WriteToKafka", KafkaIO.write()
+            .apply("WriteToKafka", KafkaIO.<Void, String>write()
                 .withBootstrapServers(options.getKafkaServer())
                 .withTopic(options.getKafkaTopic())
-                .withKeyCoder(StringUtf8Coder.of())
+//                .withKeyCoder(StringUtf8Coder.of())
                 .withValueCoder(StringUtf8Coder.of())
                 .values());
         pipeline.run();

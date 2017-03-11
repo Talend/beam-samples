@@ -57,7 +57,7 @@ public class IngestToPubSub {
         Pipeline pipeline = Pipeline.create(options);
         pipeline
                 .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
-                .apply("WriteToJMS", PubsubIO.Write.topic(options.getPubsubTopic()));
+                .apply("WriteToJMS", PubsubIO.<String>write().topic(options.getPubsubTopic()));
         pipeline.run();
 
     }

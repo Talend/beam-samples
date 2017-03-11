@@ -26,7 +26,6 @@ import org.apache.beam.sdk.options.DefaultValueFactory;
 import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +73,7 @@ public class IngestToHDFS {
         //TODO: Change for HadoopIO once it is ready
         pipeline
             .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
-            .apply("WriteToHDFS", Write.to(new HDFSFileSink(options.getOutput(), TextOutputFormat.class))
+            .apply("WriteToHDFS", Write.to(HDFSFileSink.<String>toText(options.getOutput()))
         );
         pipeline.run();
     }

@@ -211,9 +211,8 @@ public class FSToMultipleIOs {
 //            );
 
         long startTime = new Date().getTime();
-        pipeline.run();
+        pipeline.run().waitUntilFinish();
         long endTime = new Date().getTime();
-        System.out.println("Pipeline executed by " + pipeline.getOptions().getRunner().getSimpleName() + " took: " + (endTime - startTime) + " ms.");
+        System.out.println("Pipeline executed by " + options.getRunner().getSimpleName() + " took: " + (endTime - startTime) + " ms.");
     }
-
 }

@@ -70,7 +70,7 @@ public class PubSubToBigTable {
 
         Pipeline pipeline = Pipeline.create(options);
         pipeline
-            .apply("ReadFromGDELTFile", PubsubIO.Read.topic(options.getPubsubTopic()));
+            .apply("ReadFromGDELTFile", PubsubIO.read().topic(options.getPubsubTopic()));
 //            .apply("WriteToBigQuery", null);
         pipeline.run();
     }

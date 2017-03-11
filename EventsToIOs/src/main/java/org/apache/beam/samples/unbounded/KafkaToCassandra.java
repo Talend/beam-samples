@@ -17,14 +17,12 @@
  */
 package org.apache.beam.samples.unbounded;
 
+import java.util.Collections;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.StringUtf8Coder;
-import org.apache.beam.sdk.coders.VoidCoder;
 //import org.apache.beam.sdk.io.cassandra.CassandraIO;
-import org.apache.beam.sdk.io.jms.JmsIO;
 import org.apache.beam.sdk.io.kafka.KafkaIO;
 import org.apache.beam.sdk.io.kafka.KafkaRecord;
-import org.apache.beam.sdk.io.mongodb.MongoDbIO;
 import org.apache.beam.sdk.options.*;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
@@ -33,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 
 public class KafkaToCassandra {
@@ -94,9 +91,9 @@ public class KafkaToCassandra {
 
         // now we connect to the queue and process every event
         PCollection<String> data = pipeline
-            .apply("ReadFromKafka", KafkaIO.read()
+            .apply("ReadFromKafka", KafkaIO.<String, String>read()
                 .withBootstrapServers(options.getKafkaServer())
-                .withTopics(Arrays.asList(options.getKafkaTopic()))
+                .withTopics(Collections.singletonList(options.getKafkaTopic()))
                 .withKeyCoder(StringUtf8Coder.of())
                 .withValueCoder(StringUtf8Coder.of())
             )
@@ -126,10 +123,9 @@ public class KafkaToCassandra {
             }));
 
         //TODO: Test write
-        eventsInIndiaKV.apply("WriteToKafka", KafkaIO.write()
+        eventsInIndiaKV.apply("WriteToKafka", KafkaIO.<String, String>write()
                 .withBootstrapServers(options.getKafkaServer())
                 .withTopic("india")
-//                .withKeyCoder(VoidCoder.of())
                 .withKeyCoder(StringUtf8Coder.of())
                 .withValueCoder(StringUtf8Coder.of()));
 
