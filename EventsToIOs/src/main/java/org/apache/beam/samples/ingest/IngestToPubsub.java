@@ -1,7 +1,10 @@
 package org.apache.beam.samples.ingest;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.beam.sdk.Pipeline;
+import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.io.PubsubIO;
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.options.Default;
@@ -12,12 +15,8 @@ import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-
-public class IngestToPubSub {
-    private static final Logger LOG = LoggerFactory.getLogger(IngestToPubSub.class);
+public class IngestToPubsub {
+    private static final Logger LOG = LoggerFactory.getLogger(IngestToPubsub.class);
 
     /**
      * Specific pipeline options.
@@ -35,9 +34,8 @@ public class IngestToPubSub {
         void setInput(String value);
 
         @Description("Pub/Sub Topic")
-        @Default.String("gdelt")
-        String getPubsubTopic();
-        void setPubsubTopic(String value);
+        String getTopic();
+        void setTopic(String value);
 
         class GDELTFileFactory implements DefaultValueFactory<String> {
             public String create(PipelineOptions options) {
@@ -57,8 +55,10 @@ public class IngestToPubSub {
         Pipeline pipeline = Pipeline.create(options);
         pipeline
                 .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
-                .apply("WriteToJMS", PubsubIO.<String>write().topic(options.getPubsubTopic()));
+                .apply("WriteToPubsub",
+                        PubsubIO.<String>write()
+                                .topic(options.getTopic())
+                                .withCoder(StringUtf8Coder.of()));
         pipeline.run();
-
     }
 }
