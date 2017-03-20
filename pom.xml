@@ -42,10 +42,12 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <beam.version>0.7.0-SNAPSHOT</beam.version>
-        <hadoop.version>2.7.2</hadoop.version>
+        <guava.version>20.0</guava.version>
+
+        <hadoop.version>2.7.3</hadoop.version>
         <jackson.version>2.7.2</jackson.version>
         <slf4j.version>1.7.13</slf4j.version>
-        <spark.version>1.6.2</spark.version>
+        <spark.version>1.6.3</spark.version>
 
         <spark2.version>2.0.0</spark2.version>
         <spark2.jackson.version>2.6.5</spark2.jackson.version>
@@ -119,6 +121,14 @@
                 <groupId>org.apache.beam</groupId>
                 <artifactId>beam-sdks-java-io-google-cloud-platform</artifactId>
                 <version>${beam.version}</version>
+            </dependency>
+            <!-- This should not be explicit but it is needed because
+                 GCP IOs depend on the same version of guava than Beam and Hadoop
+                 leaks a different version -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
             </dependency>
 
             <!-- Log -->

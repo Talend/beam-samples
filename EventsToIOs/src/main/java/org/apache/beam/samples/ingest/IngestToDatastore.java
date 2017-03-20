@@ -15,10 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.beam.samples.bounded;
-
-import static com.google.datastore.v1.client.DatastoreHelper.makeKey;
-import static com.google.datastore.v1.client.DatastoreHelper.makeValue;
+package org.apache.beam.samples.ingest;
 
 import com.google.datastore.v1.Entity;
 import com.google.datastore.v1.Key;
@@ -38,25 +35,16 @@ import org.apache.beam.sdk.transforms.ParDo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BigQueryToDatastore {
+import static com.google.datastore.v1.client.DatastoreHelper.makeKey;
+import static com.google.datastore.v1.client.DatastoreHelper.makeValue;
 
-    private static final Logger LOG = LoggerFactory.getLogger(BigQueryToDatastore.class);
+public class IngestToDatastore {
+
+    private static final Logger LOG = LoggerFactory.getLogger(IngestToDatastore.class);
     /**
      * Specific pipeline options.
      */
     private interface Options extends PipelineOptions {
-//        @Description("Pub/Sub Topic")
-//        String getTopic();
-//        void setTopic(String value);
-//
-//        @Description("Bigtable instanceId")
-//        String getInstanceId();
-//        void setInstanceId(String value);
-//
-//        @Description("Bigtable tableId")
-//        String getTableId();
-//        void setTableId(String value);
-
         @Description("Cloud Datastore Entity Kind")
         String getKind();
         void setKind(String value);
@@ -136,22 +124,7 @@ public class BigQueryToDatastore {
         Options options = PipelineOptionsFactory.fromArgs(args).withValidation().as(Options.class);
         LOG.info(options.toString());;
 
-//        Transport.getJsonFactory().toString()
-
         Pipeline pipeline = Pipeline.create(options);
-//        PCollection<TableRow> readFromBigQuery = pipeline
-//                .apply("ReadFromBigQuery", BigQueryIO.Read.fromQuery("SELECT * FROM Q"))
-//                .apply(MapElements.via(new SimpleFunction<TableRow, String>() {
-//                    @Override
-//                    public String apply(TableRow input) {
-//                        return "yes";
-//                    }
-//                }));
-
-//        Key.Builder keyBuilder = DatastoreHelper.makeKey(...);
-//        keyBuilder.getPartitionIdBuilder().setNamespace(namespace);
-//        Key key = datastore.allocateId(keyFactory.newKey());
-
         pipeline
                 .apply("ReadFrom", Create.of("bicho"))
                 .apply("ConvertToEntities", ParDo.of(new CreateEntityFn(options.getNamespace(), options.getKind())))
@@ -160,33 +133,6 @@ public class BigQueryToDatastore {
                                 .withLocalhost(options.getDatastoreLocalhost())
                                 .withProjectId(options.getDatastoreProjectId())
                 );
-
-//        PCollection<Entity> entities = ...;
-
-// * pipeline.apply(DatastoreIO.v1().write().withProjectId(projectId));
-
-//        TableRow t = null;
-//        t.getF()
-
-//            .apply("ConvertToMutations",
-//                    MapElements.via(new SerializableFunction<String, KV<ByteString, Iterable<Mutation>>>() {
-//                        @Override
-//                        public KV<ByteString, Iterable<Mutation>> apply(String input) {
-//                            String[] fields = input.split("\\t+");
-//                            String key = fields[0];
-//                            ByteString rowKey = ByteString.copyFromUtf8(key);
-//                            Iterable<Mutation> mutations =
-//                                    ImmutableList.of(
-//                                            Mutation.newBuilder()
-//                                                    .setSetCell(Mutation.SetCell.newBuilder().setValue(ByteString.copyFromUtf8(input)))
-//                                                    .build());
-//                            return KV.of(rowKey, mutations);
-//                        }
-//                    }).withOutputType(new TypeDescriptor<KV<ByteString, Iterable<Mutation>>>() {}))
-//            .apply("WriteToBigTable",
-//                    BigtableIO.write()
-//                            .withBigtableOptions(bigtableOptions)
-//                            .withTableId(options.getTableId()));
         pipeline.run();
     }
 }

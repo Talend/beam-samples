@@ -19,8 +19,8 @@ package org.apache.beam.samples.unbounded;
 
 import com.google.bigtable.v2.Mutation;
 import com.google.cloud.bigtable.config.BigtableOptions;
-import com.google.common.collect.ImmutableList;
 import com.google.protobuf.ByteString;
+import java.util.Collections;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.PubsubIO;
 import org.apache.beam.sdk.io.gcp.bigtable.BigtableIO;
@@ -46,8 +46,6 @@ public class PubsubToBigTable {
      * Specific pipeline options.
      */
     private interface Options extends PipelineOptions {
-        String GDELT_EVENTS_URL = "http://data.gdeltproject.org/events/";
-
         @Description("GDELT file date")
         @Default.InstanceFactory(Options.GDELTFileFactory.class)
         String getDate();
@@ -97,7 +95,7 @@ public class PubsubToBigTable {
                             String key = fields[0];
                             ByteString rowKey = ByteString.copyFromUtf8(key);
                             Iterable<Mutation> mutations =
-                                    ImmutableList.of(
+                                    Collections.singletonList(
                                             Mutation.newBuilder()
                                                     .setSetCell(Mutation.SetCell.newBuilder().setValue(ByteString.copyFromUtf8(input)))
                                                     .build());
