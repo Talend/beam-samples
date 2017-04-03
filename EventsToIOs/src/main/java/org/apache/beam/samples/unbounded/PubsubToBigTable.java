@@ -52,8 +52,8 @@ public class PubsubToBigTable {
         void setDate(String value);
 
         @Description("Pub/Sub Topic")
-        String getTopic();
-        void setTopic(String value);
+        String getInputTopic();
+        void setInputTopic(String value);
 
         @Description("Bigtable projectId")
         String getProjectId();
@@ -86,7 +86,7 @@ public class PubsubToBigTable {
 
         Pipeline pipeline = Pipeline.create(options);
         pipeline
-            .apply("ReadFromTopic", PubsubIO.<String>read().topic(options.getTopic()))
+            .apply("ReadFromTopic", PubsubIO.<String>read().topic(options.getInputTopic()))
             .apply("ConvertToMutations",
                     MapElements.via(new SerializableFunction<String, KV<ByteString, Iterable<Mutation>>>() {
                         @Override

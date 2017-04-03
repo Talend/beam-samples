@@ -46,7 +46,7 @@ public class BigQueryToDatastore {
      */
     private interface Options extends PipelineOptions {
 //        @Description("Pub/Sub Topic")
-//        String getTopic();
+//        String getInputTopic();
 //        void setTopic(String value);
 //
 //        @Description("Bigtable instanceId")

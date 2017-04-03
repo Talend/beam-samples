@@ -139,7 +139,7 @@ public class HDFSToMultipleIOs {
 //        PCollection<String> data = pipeline
 //            .apply("ReadFromKafka", KafkaIO.read()
 //                .withBootstrapServers(options.getKafkaServer())
-//                .withTopics(Arrays.asList(options.getKafkaTopic()))
+//                .withTopics(Arrays.asList(options.getInputTopic()))
 ////                .withConsumerFactoryFn(new ConsumerFactoryFn(topics, 10, numElements)) // 20 partitions
 //                .withKeyCoder(StringUtf8Coder.of())
 //                .withValueCoder(StringUtf8Coder.of())

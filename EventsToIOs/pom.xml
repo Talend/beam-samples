@@ -30,7 +30,6 @@
 
     <properties>
         <activemq.version>5.13.3</activemq.version>
-        <hadoop.version>2.7.0</hadoop.version>
     </properties>
 
     <dependencies>

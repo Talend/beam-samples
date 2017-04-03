@@ -80,8 +80,8 @@ public class IngestToKafka {
 
         @Description("Kafka Topic Name")
         @Default.String("gdelt")
-        String getKafkaTopic();
-        void setKafkaTopic(String value);
+        String getOutputTopic();
+        void setOutputTopic(String value);
 
         class GDELTFileFactory implements DefaultValueFactory<String> {
             public String create(PipelineOptions options) {
@@ -105,7 +105,7 @@ public class IngestToKafka {
 //            .apply(Trace.Log.<String>print())
             .apply("WriteToKafka", KafkaIO.<Void, String>write()
                 .withBootstrapServers(options.getKafkaServer())
-                .withTopic(options.getKafkaTopic())
+                .withTopic(options.getOutputTopic())
 //                .withKeyCoder(StringUtf8Coder.of())
                 .withValueCoder(StringUtf8Coder.of())
                 .values());
