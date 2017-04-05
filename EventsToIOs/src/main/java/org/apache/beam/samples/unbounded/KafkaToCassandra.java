@@ -22,7 +22,6 @@ import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.StringUtf8Coder;
 //import org.apache.beam.sdk.io.cassandra.CassandraIO;
 import org.apache.beam.sdk.io.kafka.KafkaIO;
-import org.apache.beam.sdk.io.kafka.KafkaRecord;
 import org.apache.beam.sdk.options.*;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
@@ -96,14 +95,9 @@ public class KafkaToCassandra {
                 .withTopics(Collections.singletonList(options.getKafkaTopic()))
                 .withKeyCoder(StringUtf8Coder.of())
                 .withValueCoder(StringUtf8Coder.of())
+                .withoutMetadata()
             )
-            .apply("ExtractPayload", ParDo.of(new DoFn<KafkaRecord, String>() {
-                @ProcessElement
-                public void processElement(ProcessContext c) throws Exception {
-                    c.output(c.element().getKV().getValue().toString());
-                }
-            }));
-
+            .apply("ExtractPayload", Values.<String>create());
 
         // We filter the events for a given country (IN=India) and send them to their own Topic
         final String country = "IN";

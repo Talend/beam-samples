@@ -24,7 +24,6 @@ import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
 import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.io.kafka.KafkaIO;
-import org.apache.beam.sdk.io.kafka.KafkaRecord;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.DefaultValueFactory;
 import org.apache.beam.sdk.options.Description;
@@ -34,6 +33,7 @@ import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.Filter;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.transforms.SerializableFunction;
+import org.apache.beam.sdk.transforms.Values;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.joda.time.Duration;
@@ -108,20 +108,16 @@ public class KafkaToKafka {
         Pipeline pipeline = Pipeline.create(options);
 
         // now we connect to the queue and process every event
-        PCollection<String> data = pipeline
-            .apply("ReadFromKafka", KafkaIO.<String, String>read()
-                .withBootstrapServers(options.getKafkaServer())
-                .withTopics(Collections.singletonList(options.getInputTopic()))
-                .withKeyCoder(StringUtf8Coder.of())
-                .withValueCoder(StringUtf8Coder.of())
-            )
-            .apply("ExtractPayload", ParDo.of(new DoFn<KafkaRecord, String>() {
-                @ProcessElement
-                public void processElement(ProcessContext c) throws Exception {
-                    c.output(c.element().getKV().getValue().toString());
-                }
-            }));
-
+        PCollection<String> data =
+            pipeline
+                .apply("ReadFromKafka", KafkaIO.<String, String>read()
+                    .withBootstrapServers(options.getKafkaServer())
+                    .withTopics(Collections.singletonList(options.getInputTopic()))
+                    .withKeyCoder(StringUtf8Coder.of())
+                    .withValueCoder(StringUtf8Coder.of())
+                    .withoutMetadata()
+                )
+                .apply("ExtractPayload", Values.<String>create());
 
         // We filter the events for a given country (IN=India) and send them to their own Topic
         final String country = "IN";
@@ -140,7 +136,8 @@ public class KafkaToKafka {
                 }
             }));
 
-        eventsInIndiaKV.apply("WriteToKafka", KafkaIO.<String, String>write()
+        eventsInIndiaKV.apply("WriteToKafka",
+            KafkaIO.<String, String>write()
                 .withBootstrapServers(options.getKafkaServer())
                 .withTopic(options.getOutputTopic())
                 .withKeyCoder(StringUtf8Coder.of())

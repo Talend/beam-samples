@@ -27,6 +27,7 @@ import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.transforms.Values;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.hadoop.io.LongWritable;
@@ -143,14 +144,10 @@ public class HDFSToMultipleIOs {
 ////                .withConsumerFactoryFn(new ConsumerFactoryFn(topics, 10, numElements)) // 20 partitions
 //                .withKeyCoder(StringUtf8Coder.of())
 //                .withValueCoder(StringUtf8Coder.of())
+//                .withoutMetadata()
 ////                .withMaxNumRecords(1000)
 //            )
-//            .apply("ExtractPayload", ParDo.of(new DoFn<KafkaRecord, String>() {
-//                @ProcessElement
-//                public void processElement(ProcessContext c) throws Exception {
-//                    c.output(c.element().getKV().getValue().toString());
-//                }
-//            }));
+//            .apply("ExtractPayload", Values.<String>create());
 //            .apply(ParDo.of(new IngestToKafka.AddTimestampFn()));
 //
 //        PCollection<String> windowedData = data
