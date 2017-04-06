@@ -30,14 +30,10 @@ import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.DoFn;
-import org.apache.beam.sdk.transforms.Filter;
 import org.apache.beam.sdk.transforms.ParDo;
-import org.apache.beam.sdk.transforms.SerializableFunction;
 import org.apache.beam.sdk.transforms.Values;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
-import org.apache.beam.sdk.values.TupleTag;
-import org.apache.beam.sdk.values.TupleTagList;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +103,12 @@ public class KafkaToKafka {
                 )
                 .apply("ExtractPayload", Values.<String>create());
 
+        data.apply(ParDo.of(new DoFn<String, String>() {
+            @ProcessElement
+            public void processElement(ProcessContext c) {
+                System.out.println(String.format("** element |%s| **", c.element()));
+            }
+        }));
         // We filter the events for a given country (IN=India) and send them to their own Topic
         final String country = "IN";
         PCollection<String> eventsInIndia =
