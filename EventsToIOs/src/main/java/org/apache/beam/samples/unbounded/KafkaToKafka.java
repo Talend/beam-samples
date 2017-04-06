@@ -36,6 +36,8 @@ import org.apache.beam.sdk.transforms.SerializableFunction;
 import org.apache.beam.sdk.transforms.Values;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
+import org.apache.beam.sdk.values.TupleTag;
+import org.apache.beam.sdk.values.TupleTagList;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,6 +99,7 @@ public class KafkaToKafka {
         return "NA";
     }
 
+
     public static void main(String[] args) throws Exception {
         Options options = PipelineOptionsFactory.fromArgs(args).withValidation().as(Options.class);
         if (options.getInput() == null) {
@@ -122,9 +125,13 @@ public class KafkaToKafka {
         // We filter the events for a given country (IN=India) and send them to their own Topic
         final String country = "IN";
         PCollection<String> eventsInIndia =
-            data.apply("FilterByCountry", Filter.by(new SerializableFunction<String, Boolean>() {
-                public Boolean apply(String row) {
-                    return getCountry(row).equals(country);
+            data.apply("FilterByCountry", ParDo.of(new DoFn<String, String>() {
+                @ProcessElement
+                public void processElement(ProcessContext c){
+                    if (getCountry(c.element()).equals(country)){
+                        c.output(c.element());
+                    }
+
                 }
             }));
 
