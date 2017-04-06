@@ -49,17 +49,6 @@ public class KafkaToKafka {
      * Specific pipeline options.
      */
     private interface Options extends PipelineOptions {
-        String GDELT_EVENTS_URL = "http://data.gdeltproject.org/events/";
-
-        @Description("GDELT file date")
-        @Default.InstanceFactory(GDELTFileFactory.class)
-        String getDate();
-        void setDate(String value);
-
-        @Description("Input Path")
-        String getInput();
-        void setInput(String value);
-
         @Description("Kafka Bootstrap Servers")
         @Default.String("localhost:9092")
         String getKafkaServer();
@@ -102,12 +91,8 @@ public class KafkaToKafka {
 
     public static void main(String[] args) throws Exception {
         Options options = PipelineOptionsFactory.fromArgs(args).withValidation().as(Options.class);
-        if (options.getInput() == null) {
-            options.setInput(Options.GDELT_EVENTS_URL + options.getDate() + ".export.CSV.zip");
-        }
         LOG.info(options.toString());
         System.out.println(options.toString());
-
         Pipeline pipeline = Pipeline.create(options);
 
         // now we connect to the queue and process every event
