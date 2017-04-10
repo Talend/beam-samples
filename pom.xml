@@ -41,8 +41,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!--<beam.version>0.7.0-SNAPSHOT</beam.version>-->
-        <beam.version>0.6.0</beam.version>
+        <beam.version>0.7.0-SNAPSHOT</beam.version>
+        <!--<beam.version>0.6.0</beam.version>-->
         <guava.version>20.0</guava.version>
 
         <hadoop.version>2.7.3</hadoop.version>
