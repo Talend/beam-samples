@@ -115,9 +115,9 @@ public class KafkaToKafka {
             data.apply("FilterByCountry", ParDo.of(new DoFn<String, String>() {
                 @ProcessElement
                 public void processElement(ProcessContext c){
-                    if (getCountry(c.element()).equals(country)){
+//                    if (getCountry(c.element()).equals(country)){
                         c.output(c.element());
-                    }
+//                    }
 
                 }
             }));
