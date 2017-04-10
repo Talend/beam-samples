@@ -98,8 +98,8 @@ public class IngestToHBase {
                 return makeWrite(input.getKey(), input.getValue());
               }
             }))
-            .apply(HBaseIO.write().withConfiguration(conf).withTableId(table));
-
+//            .apply("WriteToHBase", HBaseIO.write().withConfiguration(conf).withTableId(table));
+;
         pipeline.run();
     }
 
