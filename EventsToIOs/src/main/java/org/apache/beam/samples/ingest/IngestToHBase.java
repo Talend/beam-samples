@@ -18,6 +18,8 @@
 package org.apache.beam.samples.ingest;
 
 import com.google.protobuf.ByteString;
+
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -92,9 +94,9 @@ public class IngestToHBase {
                   return KV.of(key, input);
                 }
             }))
-            .apply("ToHBaseMutation", MapElements.via(new SimpleFunction<KV<String, String>, KV<ByteString, Iterable<Mutation>>>() {
+            .apply("ToHBaseMutation", MapElements.via(new SimpleFunction<KV<String, String>, KV<byte[], Iterable<Mutation>>>() {
               @Override
-              public KV<ByteString, Iterable<Mutation>> apply(KV<String, String> input) {
+              public KV<byte[], Iterable<Mutation>> apply(KV<String, String> input) {
                 return makeWrite(input.getKey(), input.getValue());
               }
             }))
@@ -103,16 +105,16 @@ public class IngestToHBase {
         pipeline.run();
     }
 
-    private static KV<ByteString, Iterable<Mutation>> makeWrite(String key, String value) {
-        ByteString rowKey = ByteString.copyFromUtf8(key);
+    private static KV<byte[], Iterable<Mutation>> makeWrite(String key, String value) {
+        byte[] rowKey = key.getBytes(StandardCharsets.UTF_8);
         List<Mutation> mutations = new ArrayList<>();
         mutations.add(makeMutation(key, value));
         return KV.of(rowKey, (Iterable<Mutation>) mutations);
     }
 
     private static Mutation makeMutation(String key, String value) {
-        ByteString rowKey = ByteString.copyFromUtf8(key);
-        return new Put(rowKey.toByteArray())
+        byte[] rowKey = key.getBytes(StandardCharsets.UTF_8);
+        return new Put(rowKey)
             .addColumn(COLUMN_FAMILY, COLUMN_NAME, Bytes.toBytes(value))
             .addColumn(COLUMN_FAMILY, COLUMN_EMAIL, Bytes.toBytes(value + "@email.com"));
     }

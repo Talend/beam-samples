@@ -56,9 +56,8 @@ public class IngestToPubsub {
         pipeline
                 .apply("ReadFromGDELTFile", TextIO.read().from(options.getInput()))
                 .apply("WriteToPubsub",
-                        PubsubIO.<String>write()
-                                .to(options.getTopic())
-                                .withCoder(StringUtf8Coder.of()));
+                        PubsubIO.writeStrings()
+                                .to(options.getTopic()));
         pipeline.run();
     }
 }

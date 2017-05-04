@@ -87,7 +87,7 @@ public class PubsubToBigTable {
 
         Pipeline pipeline = Pipeline.create(options);
         pipeline
-            .apply("ReadFromTopic", PubsubIO.<String>read().fromTopic(options.getInputTopic()))
+            .apply("ReadFromTopic", PubsubIO.readStrings().fromTopic(options.getInputTopic()))
             .apply("ConvertToMutations",
                     MapElements.via(new SimpleFunction<String, KV<ByteString, Iterable<Mutation>>>() {
                         @Override
