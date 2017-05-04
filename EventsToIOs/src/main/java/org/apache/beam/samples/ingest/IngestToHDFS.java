@@ -19,7 +19,6 @@ package org.apache.beam.samples.ingest;
 
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
-import org.apache.beam.sdk.io.Write;
 import org.apache.beam.sdk.io.hdfs.HDFSFileSink;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.DefaultValueFactory;
@@ -72,9 +71,8 @@ public class IngestToHDFS {
         Pipeline pipeline = Pipeline.create(options);
         //TODO: Change for HadoopIO once it is ready
         pipeline
-            .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
-            .apply("WriteToHDFS", Write.to(HDFSFileSink.<String>toText(options.getOutput()))
-        );
+            .apply("ReadFromGDELTFile", TextIO.read().from(options.getInput()))
+            .apply("WriteToHDFS", TextIO.write().to(options.getOutput()));
         pipeline.run();
     }
 }

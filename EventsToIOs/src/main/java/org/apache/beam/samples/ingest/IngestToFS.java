@@ -69,8 +69,8 @@ public class IngestToFS {
 
         Pipeline pipeline = Pipeline.create(options);
         pipeline
-            .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
-            .apply("WriteToFS", TextIO.Write.to(options.getOutput())
+            .apply("ReadFromGDELTFile", TextIO.read().from(options.getInput()))
+            .apply("WriteToFS", TextIO.write().to(options.getOutput())
         );
         pipeline.run();
     }

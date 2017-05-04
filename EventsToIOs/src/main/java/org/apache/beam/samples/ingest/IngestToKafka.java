@@ -28,6 +28,7 @@ import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 
 import org.apache.beam.sdk.transforms.DoFn;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.slf4j.Logger;
@@ -100,14 +101,14 @@ public class IngestToKafka {
 
         Pipeline pipeline = Pipeline.create(options);
         pipeline
-            .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
+            .apply("ReadFromGDELTFile", TextIO.read().from(options.getInput()))
 //            .apply(ParDo.of(new AddTimestampFn()))
 //            .apply(Trace.Log.<String>print())
             .apply("WriteToKafka", KafkaIO.<Void, String>write()
                 .withBootstrapServers(options.getKafkaServer())
                 .withTopic(options.getOutputTopic())
 //                .withKeyCoder(StringUtf8Coder.of())
-                .withValueCoder(StringUtf8Coder.of())
+                .withValueSerializer(StringSerializer.class)
                 .values());
         pipeline.run();
     }

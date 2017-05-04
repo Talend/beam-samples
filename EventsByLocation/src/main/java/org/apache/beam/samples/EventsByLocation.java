@@ -87,7 +87,7 @@ public class EventsByLocation {
 
         Pipeline pipeline = Pipeline.create(options);
         PCollection<String> read = pipeline
-                .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
+                .apply("ReadFromGDELTFile", TextIO.read().from(options.getInput()))
                 .apply("TakeASample", Sample.<String>any(10));
         read.apply(ParDo.of(new DoFn<String, Void>() {
             @ProcessElement
@@ -113,7 +113,7 @@ public class EventsByLocation {
                         return "{\"" + input.getKey() + "\": " + input.getValue() + "}";
                     }
                 }))
-                .apply("WriteResults", TextIO.Write.to(options.getOutput()));
+                .apply("WriteResults", TextIO.write().to(options.getOutput()));
 
         pipeline.run();
     }

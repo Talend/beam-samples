@@ -81,7 +81,7 @@ public class IngestToActiveMQ {
 
         Pipeline pipeline = Pipeline.create(options);
         pipeline
-            .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
+            .apply("ReadFromGDELTFile", TextIO.read().from(options.getInput()))
             .apply("WriteToJMS", JmsIO.write()
                 .withConnectionFactory(connFactory)
                 .withQueue(options.getJMSQueue())

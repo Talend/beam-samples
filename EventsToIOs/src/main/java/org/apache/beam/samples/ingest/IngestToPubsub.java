@@ -5,8 +5,8 @@ import java.util.Date;
 
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.StringUtf8Coder;
-import org.apache.beam.sdk.io.PubsubIO;
 import org.apache.beam.sdk.io.TextIO;
+import org.apache.beam.sdk.io.gcp.pubsub.PubsubIO;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.DefaultValueFactory;
 import org.apache.beam.sdk.options.Description;
@@ -54,10 +54,10 @@ public class IngestToPubsub {
 
         Pipeline pipeline = Pipeline.create(options);
         pipeline
-                .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
+                .apply("ReadFromGDELTFile", TextIO.read().from(options.getInput()))
                 .apply("WriteToPubsub",
                         PubsubIO.<String>write()
-                                .topic(options.getTopic())
+                                .to(options.getTopic())
                                 .withCoder(StringUtf8Coder.of()));
         pipeline.run();
     }

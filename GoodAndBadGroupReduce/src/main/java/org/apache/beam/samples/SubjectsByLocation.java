@@ -222,20 +222,20 @@ public class SubjectsByLocation {
         LOG.info("Common options: " + options.toString());
 
         Pipeline goodPipeline = Pipeline.create(options);
-        goodPipeline.apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
+        goodPipeline.apply("ReadFromGDELTFile", TextIO.read().from(options.getInput()))
                 .apply("TakeASample", Sample.<String>any(10000))
                 .apply("GetSubjectsByLocation", new SubjectsByLocationTransformGood())
-                .apply("WriteResults", TextIO.Write.to(options.getOutput() + "good/"));
+                .apply("WriteResults", TextIO.write().to(options.getOutput() + "good/"));
         Instant start = Instant.now();
         goodPipeline.run();
         Instant end = Instant.now();
         long runningTimeForGoodPipeline = end.getMillis() - start.getMillis();
 
         Pipeline badPipeline = Pipeline.create(options);
-        badPipeline.apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
+        badPipeline.apply("ReadFromGDELTFile", TextIO.read().from(options.getInput()))
                 .apply("TakeASample", Sample.<String>any(10000))
                 .apply("GetSubjectsByLocation", new subjectsByLocationTransformBad())
-                .apply("WriteResults", TextIO.Write.to(options.getOutput() + "bad/"));
+                .apply("WriteResults", TextIO.write().to(options.getOutput() + "bad/"));
 
         start = Instant.now();
         badPipeline.run();

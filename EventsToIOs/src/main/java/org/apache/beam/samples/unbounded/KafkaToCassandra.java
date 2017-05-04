@@ -26,6 +26,7 @@ import org.apache.beam.sdk.options.*;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,8 +121,8 @@ public class KafkaToCassandra {
         eventsInIndiaKV.apply("WriteToKafka", KafkaIO.<String, String>write()
                 .withBootstrapServers(options.getKafkaServer())
                 .withTopic("india")
-                .withKeyCoder(StringUtf8Coder.of())
-                .withValueCoder(StringUtf8Coder.of()));
+                .withKeySerializer(StringSerializer.class)
+                .withValueSerializer(StringSerializer.class));
 
 
         // TODO: fix error on grouping without windows

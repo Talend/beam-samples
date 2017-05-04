@@ -24,6 +24,7 @@ import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
 import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.io.kafka.KafkaIO;
+import org.apache.beam.sdk.io.kafka.serialization.CoderBasedKafkaSerializer;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.DefaultValueFactory;
 import org.apache.beam.sdk.options.Description;
@@ -34,6 +35,7 @@ import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.transforms.Values;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
+import org.codehaus.jackson.map.ser.std.StringSerializer;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,8 +136,8 @@ public class KafkaToKafka {
             KafkaIO.<String, String>write()
                 .withBootstrapServers(options.getKafkaServer())
                 .withTopic(options.getOutputTopic())
-                .withKeyCoder(StringUtf8Coder.of())
-                .withValueCoder(StringUtf8Coder.of()));
+                    .withKeySerializer(org.apache.kafka.common.serialization.StringSerializer.class)
+                .withValueSerializer(org.apache.kafka.common.serialization.StringSerializer.class));
         PipelineResult run = pipeline.run();
         run.waitUntilFinish(Duration.standardSeconds(options.getDuration()));
     }

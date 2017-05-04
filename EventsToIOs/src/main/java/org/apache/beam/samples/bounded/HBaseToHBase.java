@@ -65,7 +65,7 @@ public class HBaseToHBase {
 
     Pipeline pipeline = Pipeline.create(options);
     pipeline
-        .apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()))
+        .apply("ReadFromGDELTFile", TextIO.read().from(options.getInput()))
         .apply("ConvertToKV", MapElements.via(new SimpleFunction<String, KV<String, String>>() {
           @Override
           public KV<String, String> apply(String input) {

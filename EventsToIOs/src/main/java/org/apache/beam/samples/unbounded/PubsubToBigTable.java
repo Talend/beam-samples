@@ -22,8 +22,8 @@ import com.google.cloud.bigtable.config.BigtableOptions;
 import com.google.protobuf.ByteString;
 import java.util.Collections;
 import org.apache.beam.sdk.Pipeline;
-import org.apache.beam.sdk.io.PubsubIO;
 import org.apache.beam.sdk.io.gcp.bigtable.BigtableIO;
+import org.apache.beam.sdk.io.gcp.pubsub.PubsubIO;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.DefaultValueFactory;
 import org.apache.beam.sdk.options.Description;
@@ -31,6 +31,7 @@ import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.transforms.SerializableFunction;
+import org.apache.beam.sdk.transforms.SimpleFunction;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.TypeDescriptor;
 import org.slf4j.Logger;
@@ -86,9 +87,9 @@ public class PubsubToBigTable {
 
         Pipeline pipeline = Pipeline.create(options);
         pipeline
-            .apply("ReadFromTopic", PubsubIO.<String>read().topic(options.getInputTopic()))
+            .apply("ReadFromTopic", PubsubIO.<String>read().fromTopic(options.getInputTopic()))
             .apply("ConvertToMutations",
-                    MapElements.via(new SerializableFunction<String, KV<ByteString, Iterable<Mutation>>>() {
+                    MapElements.via(new SimpleFunction<String, KV<ByteString, Iterable<Mutation>>>() {
                         @Override
                         public KV<ByteString, Iterable<Mutation>> apply(String input) {
                             String[] fields = input.split("\\t+");
@@ -101,7 +102,7 @@ public class PubsubToBigTable {
                                                     .build());
                             return KV.of(rowKey, mutations);
                         }
-                    }).withOutputType(new TypeDescriptor<KV<ByteString, Iterable<Mutation>>>() {}))
+                    }))
             .apply("WriteToBigTable",
                     BigtableIO.write()
                             .withBigtableOptions(bigtableOptions)

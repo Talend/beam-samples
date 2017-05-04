@@ -139,13 +139,13 @@ public class FSToMultipleIOs {
 //        );
 
 
-        PCollection<String> data = pipeline.apply("ReadFromGDELTFile", TextIO.Read.from(options.getInput()));
+        PCollection<String> data = pipeline.apply("ReadFromGDELTFile", TextIO.read().from(options.getInput()));
         // We filter the events for a given country (IN=India) and send them to their own JMS queue
         PCollection<String> eventsInIndia = filterByCountry(data, "IN");
 //        eventsInIndia.apply("WriteToJms", JmsIO.write()
 //                        .withConnectionFactory(connFactory)
 //                        .withQueue(options.getJMSQueue()));
-        eventsInIndia.apply("WriteEventsInIndia", TextIO.Write.to(options.getOutput() + "india"));
+        eventsInIndia.apply("WriteEventsInIndia", TextIO.write().to(options.getOutput() + "india"));
 
 //        // we count the events per country and register them in Mongo
 //        PCollection<String> countByCountry =
