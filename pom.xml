@@ -60,6 +60,8 @@
         <module>EventsToIOs</module>
         <module>IoTEventsProcess</module>
         <module>GoodAndBadGroupReduce</module>
+        <module>data-ingestion</module>
+        <module>iot</module>
     </modules>
 
     <dependencyManagement>
