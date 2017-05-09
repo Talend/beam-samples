@@ -62,6 +62,8 @@
         <module>GoodAndBadGroupReduce</module>
         <module>data-ingestion</module>
         <module>iot</module>
+        <module>normalization</module>
+        <module>analytic</module>
     </modules>
 
     <dependencyManagement>
