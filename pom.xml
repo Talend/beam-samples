@@ -41,7 +41,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <beam.version>0.7.0-SNAPSHOT</beam.version>
+        <beam.version>2.1.0-SNAPSHOT</beam.version>
         <guava.version>20.0</guava.version>
 
         <hadoop.version>2.7.3</hadoop.version>
@@ -64,6 +64,7 @@
         <module>iot</module>
         <module>normalization</module>
         <module>analytic</module>
+        <module>orchestration</module>
     </modules>
 
     <dependencyManagement>

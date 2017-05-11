@@ -1,6 +1,5 @@
 package org.apache.beam.samples.iot;
 
-import com.google.api.client.http.javanet.ConnectionFactory;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;

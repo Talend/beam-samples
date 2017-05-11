@@ -10,7 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>iot</artifactId>
+    <artifactId>orchestration</artifactId>
 
     <dependencies>
 
@@ -24,13 +24,25 @@
         <!-- IOs -->
         <dependency>
             <groupId>org.apache.beam</groupId>
-            <artifactId>beam-sdks-java-io-mqtt</artifactId>
+            <artifactId>beam-sdks-java-io-jdbc</artifactId>
             <version>2.1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.beam</groupId>
             <artifactId>beam-sdks-java-io-jms</artifactId>
             <version>2.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.beam</groupId>
+            <artifactId>beam-sdks-java-io-kafka</artifactId>
+            <version>2.1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Derby JDBC driver -->
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>10.13.1.1</version>
         </dependency>
 
         <!-- ActiveMQ -->
@@ -57,18 +69,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
             <version>1.7.21</version>
-        </dependency>
-
-        <!-- Camel -->
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-core</artifactId>
-            <version>2.18.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-mqtt</artifactId>
-            <version>2.18.2</version>
         </dependency>
 
     </dependencies>
