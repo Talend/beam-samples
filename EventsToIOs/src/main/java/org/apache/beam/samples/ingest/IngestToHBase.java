@@ -17,8 +17,6 @@
  */
 package org.apache.beam.samples.ingest;
 
-import com.google.protobuf.ByteString;
-
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
