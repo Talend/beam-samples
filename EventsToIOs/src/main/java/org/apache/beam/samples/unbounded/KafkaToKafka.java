@@ -22,9 +22,7 @@ import java.util.Collections;
 import java.util.Date;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
-import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.io.kafka.KafkaIO;
-import org.apache.beam.sdk.io.kafka.serialization.CoderBasedKafkaSerializer;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.DefaultValueFactory;
 import org.apache.beam.sdk.options.Description;
@@ -99,8 +97,6 @@ public class KafkaToKafka {
                 .apply("ReadFromKafka", KafkaIO.<String, String>read()
                     .withBootstrapServers(options.getKafkaServer())
                     .withTopics(Collections.singletonList(options.getInputTopic()))
-                    .withKeyCoder(StringUtf8Coder.of())
-                    .withValueCoder(StringUtf8Coder.of())
                     .withoutMetadata()
                 )
                 .apply("ExtractPayload", Values.<String>create());

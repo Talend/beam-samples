@@ -94,8 +94,6 @@ public class KafkaToCassandra {
             .apply("ReadFromKafka", KafkaIO.<String, String>read()
                 .withBootstrapServers(options.getKafkaServer())
                 .withTopics(Collections.singletonList(options.getKafkaTopic()))
-                .withKeyCoder(StringUtf8Coder.of())
-                .withValueCoder(StringUtf8Coder.of())
                 .withoutMetadata()
             )
             .apply("ExtractPayload", Values.<String>create());

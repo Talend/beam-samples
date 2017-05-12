@@ -19,7 +19,7 @@ package org.apache.beam.samples.bounded;
 
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.Read;
-import org.apache.beam.sdk.io.hdfs.HDFSFileSource;
+import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.DefaultValueFactory;
 import org.apache.beam.sdk.options.Description;
@@ -125,16 +125,7 @@ public class HDFSToMultipleIOs {
         Pipeline pipeline = Pipeline.create(options);
 
         PCollection<String> data = pipeline
-                .apply("ReadFromHDFS", Read.from(
-                        HDFSFileSource.from(options.getInput(),
-                                TextInputFormat.class, LongWritable.class, Text.class))
-                )
-                .apply("ExtractPayload", ParDo.of(new DoFn<KV<LongWritable, Text>, String>() {
-                    @ProcessElement
-                    public void processElement(ProcessContext c) throws Exception {
-                        c.output(c.element().getValue().toString());
-                    }
-                }));
+            .apply("ReadFromHDFS", TextIO.read().from(options.getInput().toString()));
 
         // now we connect to the queue and process every event
 //        PCollection<String> data = pipeline
