@@ -60,10 +60,11 @@
         <module>EventsToIOs</module>
         <module>IoTEventsProcess</module>
         <module>GoodAndBadGroupReduce</module>
+        <module>analytic</module>
         <module>data-ingestion</module>
         <module>iot</module>
+        <module>metrics-polling</module>
         <module>normalization</module>
-        <module>analytic</module>
         <module>orchestration</module>
     </modules>
 
@@ -94,6 +95,7 @@
                 <artifactId>beam-sdks-java-io-google-cloud-platform</artifactId>
                 <version>${beam.version}</version>
             </dependency>
+
             <!-- This should not be explicit but it is needed because
                  GCP IOs depend on the same version of guava than Beam and Hadoop
                  leaks a different version -->

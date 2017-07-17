@@ -46,41 +46,8 @@ public class JmsToHdfs {
                 .apply(Window.<String>into(FixedWindows.of(Duration.standardSeconds(30))))
                 .apply(TextIO.write()
                 .to("hdfs://localhost/uc2")
-                .withFilenamePolicy(new PerWindowFiles("uc2"))
                 .withWindowedWrites()
                 .withNumShards(1));
         pipeline.run();
     }
-
-    public static class PerWindowFiles extends FileBasedSink.FilenamePolicy {
-
-        private final String prefix;
-
-        public PerWindowFiles(String prefix) {
-            this.prefix = prefix;
-        }
-
-        public String filenamePrefixForWindow(IntervalWindow window) {
-            return String.format("%s-%s-%s",
-                    prefix, FORMATTER.print(window.start()), FORMATTER.print(window.end()));
-        }
-
-        @Override
-        public ResourceId windowedFilename(
-                ResourceId outputDirectory, WindowedContext context, String extension) {
-            IntervalWindow window = (IntervalWindow) context.getWindow();
-            String filename = String.format(
-                    "%s-%s-of-%s%s",
-                    filenamePrefixForWindow(window), context.getShardNumber(), context.getNumShards(),
-                    extension);
-            return outputDirectory.resolve(filename, ResolveOptions.StandardResolveOptions.RESOLVE_FILE);
-        }
-
-        @Nullable
-        @Override
-        public ResourceId unwindowedFilename(ResourceId resourceId, Context context, String s) {
-            throw new UnsupportedOperationException("Unsupported.");
-        }
-    }
-
 }

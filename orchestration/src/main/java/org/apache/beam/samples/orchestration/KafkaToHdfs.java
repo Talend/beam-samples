@@ -28,7 +28,11 @@ public class KafkaToHdfs {
         PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
         Pipeline pipeline = Pipeline.create(options);
         pipeline
-                .apply(KafkaIO.<Long, String>read().withBootstrapServers("localhost:9092").withTopic("BEAM").withKeyDeserializer(LongDeserializer.class).withValueDeserializer(StringDeserializer.class))
+                .apply(KafkaIO.<Long, String>read()
+                        .withBootstrapServers("localhost:9092")
+                        .withTopic("BEAM")
+                        .withKeyDeserializer(LongDeserializer.class)
+                        .withValueDeserializer(StringDeserializer.class))
                 .apply(ParDo.of(new DoFn<KafkaRecord<Long, String>, String>() {
                     @ProcessElement
                     public void processElement(ProcessContext processContext) {
@@ -43,41 +47,9 @@ public class KafkaToHdfs {
                 )
                 .apply(TextIO.write()
                         .to("hdfs://localhost/uc5")
-                        .withFilenamePolicy(new PerWindowFiles("uc5"))
-                        .withWindowedWrites()
-                        .withNumShards(1));
+//                        .to(new PerWindowFiles("hdfs://localhost/uc5"))
+                        .withWindowedWrites());
+//                        .withNumShards(1));
         pipeline.run();
     }
-
-    public static class PerWindowFiles extends FileBasedSink.FilenamePolicy {
-
-        private final String prefix;
-
-        public PerWindowFiles(String prefix) {
-            this.prefix = prefix;
-        }
-
-        public String filenamePrefixForWindow(IntervalWindow window) {
-            return String.format("%s-%s-%s",
-                    prefix, FORMATTER.print(window.start()), FORMATTER.print(window.end()));
-        }
-
-        @Override
-        public ResourceId windowedFilename(
-                ResourceId outputDirectory, WindowedContext context, String extension) {
-            IntervalWindow window = (IntervalWindow) context.getWindow();
-            String filename = String.format(
-                    "%s-%s-of-%s%s",
-                    filenamePrefixForWindow(window), context.getShardNumber(), context.getNumShards(),
-                    extension);
-            return outputDirectory.resolve(filename, ResolveOptions.StandardResolveOptions.RESOLVE_FILE);
-        }
-
-        @Nullable
-        @Override
-        public ResourceId unwindowedFilename(ResourceId resourceId, Context context, String s) {
-            throw new UnsupportedOperationException("Unsupported.");
-        }
-    }
-
 }
