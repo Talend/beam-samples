@@ -70,22 +70,15 @@ public class HBaseToHBase {
             return KV.of(key, input);
           }
         }))
-        .apply("ToHBaseMutation", MapElements.via(new SimpleFunction<KV<String, String>, KV<byte[], Iterable<Mutation>>>() {
+        .apply("ToHBaseMutation", MapElements.via(new SimpleFunction<KV<String, String>, Mutation>() {
           @Override
-          public KV<byte[], Iterable<Mutation>> apply(KV<String, String> input) {
-            return makeWrite(input.getKey(), input.getValue());
+          public Mutation apply(KV<String, String> input) {
+            return makeMutation(input.getKey(), input.getValue());
           }
         }))
         .apply(HBaseIO.write().withConfiguration(conf).withTableId(options.getInput()));
 
     pipeline.run();
-  }
-
-  private static KV<byte[], Iterable<Mutation>> makeWrite(String key, String value) {
-    byte[] rowKey = key.getBytes(StandardCharsets.UTF_8);
-    List<Mutation> mutations = new ArrayList<>();
-    mutations.add(makeMutation(key, value));
-    return KV.of(rowKey, (Iterable<Mutation>) mutations);
   }
 
   private static Mutation makeMutation(String key, String value) {
