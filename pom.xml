@@ -56,6 +56,7 @@
     </properties>
 
     <modules>
+        <module>amazon-web-services</module>
         <module>EventsByLocation</module>
         <module>EventsToIOs</module>
         <module>IoTEventsProcess</module>
