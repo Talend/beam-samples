@@ -41,7 +41,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <beam.version>2.2.0-SNAPSHOT</beam.version>
+        <beam.version>2.2.0</beam.version>
         <guava.version>20.0</guava.version>
 
         <hadoop.version>2.7.3</hadoop.version>
@@ -49,7 +49,7 @@
         <slf4j.version>1.7.25</slf4j.version>
         <spark.version>1.6.3</spark.version>
 
-        <spark2.version>2.0.0</spark2.version>
+        <spark2.version>2.1.0</spark2.version>
         <spark2.jackson.version>2.6.5</spark2.jackson.version>
 
         <apex.core.version>3.5.0-SNAPSHOT</apex.core.version>
