@@ -12,6 +12,7 @@ import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.transforms.windowing.FixedWindows;
 import org.apache.beam.sdk.transforms.windowing.Window;
+import org.apache.beam.sdk.values.KV;
 import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.joda.time.Duration;
@@ -87,26 +88,31 @@ public class CheckTimestamps {
                     }
                 }))
 
-
-                .apply(ParDo.of(new DoFn<WordEntry, String>() {
+                .apply(MapElements.via(new SimpleFunction<WordEntry, KV<String, WordEntry>>() {
+                    @Override
+                    public KV<String, WordEntry> apply(WordEntry input) {
+                        return KV.of(input.getWord(), input);
+                    }
+                }))
+                .apply(GroupByKey.<String, WordEntry>create())
+                .apply(ParDo.of(new DoFn<KV<String, Iterable<WordEntry>>, String>() {
                     @ProcessElement
                     public void processElement(ProcessContext context) {
-                        LOG.info("WORD: " + context.element().getWord() +
-                                ", TS: " + context.timestamp().getMillis());
-                        context.output(String.format("WORD: %s, TS1: %d, TS2: %d",
-                                context.element().getWord(), context.element().getTs(), context.timestamp().getMillis()));
+                        context.output(context.element().getKey() + ", TS1:" + context.element().getValue().iterator().next().getTs());
                     }
                 }))
 
-//                .apply(WithTimestamps.of((WordEntry i) -> new Instant(i.getTs())))
-//                .apply(ParDo.of(new DoFn<WordEntry, String>() {
-//                    @ProcessElement
-//                    public void processElement(ProcessContext context) {
+
+                .apply(ParDo.of(new DoFn<String, String>() {
+                    @ProcessElement
+                    public void processElement(ProcessContext context) {
 //                        LOG.info("WORD: " + context.element().getWord() +
 //                                ", TS: " + context.timestamp().getMillis());
-//                        context.output(context.element().getWord());
-//                    }
-//                }))
+                        context.output(String.format("WORD: %s, TS2: %d",
+                                context.element(), context.timestamp().getMillis()));
+                    }
+                }))
+
                 .apply(TextIO.write().to("/tmp/foo.out")
                         .withWindowedWrites()
                         .withNumShards(1));
