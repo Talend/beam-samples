@@ -32,6 +32,11 @@
             <artifactId>beam-sdks-java-io-kafka</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.beam</groupId>
+            <artifactId>beam-sdks-java-io-hadoop-file-system</artifactId>
+        </dependency>
+
         <!-- ActiveMQ -->
         <dependency>
             <groupId>org.apache.activemq</groupId>
