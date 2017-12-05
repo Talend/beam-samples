@@ -38,6 +38,8 @@ public class CountObjectsOnPlot {
     static final int COORD_X = 100;  // Default maximum coordinate value (axis X)
     static final int COORD_Y = 100;  // Default maximum coordinate value (axis Y)
     static final String OUTPUT_PATH = "/tmp/beam/cars_report";  // Default output path
+    static final String BOOTSTRAP_SERVERS = "localhost:9092";  // Default bootstrap kafka servers
+    static final String TOPIC = "BEAM";  // Default kafka topic name
 
     /**
      * Specific pipeline options.
@@ -58,10 +60,20 @@ public class CountObjectsOnPlot {
         Integer getCoordY();
         void setCoordY(Integer value);
 
+        @Description("Kafka bootstrap servers")
+        @Default.String(BOOTSTRAP_SERVERS)
+        String getBootstrap();
+        void setBootstrap(String value);
+
         @Description("Output Path")
         @Default.String(OUTPUT_PATH)
         String getOutput();
         void setOutput(String value);
+
+        @Description("Kafka topic name")
+        @Default.String(TOPIC)
+        String getTopic();
+        void setTopic(String value);
     }
 
     private static class FilterObjectsByCoordinates implements SerializableFunction<String, Boolean> {
@@ -90,8 +102,8 @@ public class CountObjectsOnPlot {
         Pipeline pipeline = Pipeline.create(options);
         pipeline
                 .apply(KafkaIO.<Long, String>read()
-                        .withBootstrapServers("localhost:9092")
-                        .withTopic("BEAM")
+                        .withBootstrapServers(options.getBootstrap())
+                        .withTopic(options.getTopic())
                         .withKeyDeserializer(LongDeserializer.class)
                         .withValueDeserializer(StringDeserializer.class))
                 .apply(ParDo.of(new DoFn<KafkaRecord<Long, String>, String>() {
