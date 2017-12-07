@@ -73,6 +73,7 @@
         <module>normalization</module>
         <module>orchestration</module>
         <module>serializableTests</module>
+        <module>join</module>
     </modules>
 
     <dependencyManagement>
