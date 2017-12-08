@@ -1,10 +1,7 @@
 package org.apache.beam.samples.orchestration;
 
 import org.apache.beam.sdk.Pipeline;
-import org.apache.beam.sdk.io.FileBasedSink;
 import org.apache.beam.sdk.io.TextIO;
-import org.apache.beam.sdk.io.fs.ResolveOptions;
-import org.apache.beam.sdk.io.fs.ResourceId;
 import org.apache.beam.sdk.io.kafka.KafkaIO;
 import org.apache.beam.sdk.io.kafka.KafkaRecord;
 import org.apache.beam.sdk.options.Default;
@@ -20,10 +17,7 @@ import org.joda.time.Duration;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import javax.annotation.Nullable;
-
 public class KafkaToHdfs {
-
     private static final DateTimeFormatter FORMATTER = ISODateTimeFormat.hourMinute();
 
     static final String OUTPUT_PATH = "/tmp/kafka2hdfs";  // Default output path
@@ -76,6 +70,7 @@ public class KafkaToHdfs {
 //                        .to(new PerWindowFiles("hdfs://localhost/uc5"))
                         .withWindowedWrites()
                         .withNumShards(1));
-        pipeline.run();
+        pipeline.run().waitUntilFinish();
+
     }
 }
