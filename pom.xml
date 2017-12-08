@@ -49,7 +49,7 @@
         <slf4j.version>1.7.25</slf4j.version>
         <spark.version>1.6.3</spark.version>
 
-        <spark2.version>2.1.0</spark2.version>
+        <spark2.version>2.2.0</spark2.version>
         <spark2.jackson.version>2.6.5</spark2.jackson.version>
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
@@ -181,7 +181,7 @@
             <!-- Log -->
             <dependency>
                 <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-simple</artifactId>
+                <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
 
@@ -189,6 +189,7 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-jdk14</artifactId>
                 <version>${slf4j.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
             <!-- Runners -->
@@ -401,6 +402,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
+                <version>${maven-shade-plugin.version}</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <filters>
