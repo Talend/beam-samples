@@ -23,8 +23,7 @@ import java.util.Date;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
 import org.apache.beam.sdk.io.kafka.KafkaIO;
-import org.apache.beam.sdk.metrics.Counter;
-import org.apache.beam.sdk.metrics.Metrics;
+import org.apache.beam.sdk.metrics.*;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.DefaultValueFactory;
 import org.apache.beam.sdk.options.Description;
@@ -143,7 +142,15 @@ public class KafkaToKafka {
                 .withTopic(options.getOutputTopic())
                     .withKeySerializer(org.apache.kafka.common.serialization.StringSerializer.class)
                 .withValueSerializer(org.apache.kafka.common.serialization.StringSerializer.class));
-        PipelineResult run = pipeline.run();
-        run.waitUntilFinish(Duration.standardSeconds(options.getDuration()));
+        PipelineResult pipelineResult = pipeline.run();
+                pipelineResult
+                        .metrics()
+                        .queryMetrics(
+                                MetricsFilter.builder()
+                                        .addNameFilter(
+                                                MetricNameFilter.named("samples", "elements"))
+                                        .build());
+
+        pipelineResult.waitUntilFinish(Duration.standardSeconds(options.getDuration()));
     }
 }
