@@ -36,6 +36,7 @@ public class JoinInStreaming {
   static final String BOOTSTRAP_SERVERS = "localhost:9092";
   static final String TOPIC_1 = "BEAM_1";
   static final String TOPIC_2 = "BEAM_2";
+  public static final int WINDOW_SIZE = 20; // secs
 
   /**
    * Specific pipeline options.
@@ -61,6 +62,11 @@ public class JoinInStreaming {
     @Default.String(TOPIC_2)
     String getTopic2();
     void setTopic2(String value);
+
+    @Description("Fixed window duration, in seconds")
+    @Default.Integer(WINDOW_SIZE)
+    Integer getWindowSize();
+    void setWindowSize(Integer value);
   }
 
   public static void main(String[] args) throws Exception {
@@ -82,7 +88,8 @@ public class JoinInStreaming {
             processContext.output(KV.of(split[0], split[1]));
           }
         }))
-        .apply(Window.<KV<String, String>>into(FixedWindows.of(Duration.standardSeconds(10)))
+        .apply(Window.<KV<String, String>>into(
+            FixedWindows.of(Duration.standardSeconds(options.getWindowSize())))
             .withAllowedLateness(Duration.ZERO).discardingFiredPanes());
 
     // Input from second Kafka topic
@@ -99,7 +106,8 @@ public class JoinInStreaming {
             processContext.output(KV.of(split[0], Integer.valueOf(split[1])));
           }
         }))
-        .apply(Window.<KV<String, Integer>>into(FixedWindows.of(Duration.standardSeconds(10)))
+        .apply(Window.<KV<String, Integer>>into(
+            FixedWindows.of(Duration.standardSeconds(options.getWindowSize())))
             .withAllowedLateness(Duration.ZERO).discardingFiredPanes());
 
     final TupleTag<String> tag1 = new TupleTag<>();
