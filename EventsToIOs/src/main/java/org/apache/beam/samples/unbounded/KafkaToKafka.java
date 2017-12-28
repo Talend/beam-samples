@@ -143,14 +143,6 @@ public class KafkaToKafka {
                     .withKeySerializer(org.apache.kafka.common.serialization.StringSerializer.class)
                 .withValueSerializer(org.apache.kafka.common.serialization.StringSerializer.class));
         PipelineResult pipelineResult = pipeline.run();
-                pipelineResult
-                        .metrics()
-                        .queryMetrics(
-                                MetricsFilter.builder()
-                                        .addNameFilter(
-                                                MetricNameFilter.named("samples", "elements"))
-                                        .build());
-
         pipelineResult.waitUntilFinish(Duration.standardSeconds(options.getDuration()));
     }
 }
