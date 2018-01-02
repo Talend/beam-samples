@@ -74,6 +74,7 @@
         <module>orchestration</module>
         <module>serializableTests</module>
         <module>join</module>
+        <module>runners-tests</module>
     </modules>
 
     <dependencyManagement>
