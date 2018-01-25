@@ -53,7 +53,7 @@ public class PollingExample {
         .apply(
           GenerateSequence
               .from(0)
-              .to(Long.MIN_VALUE)
+              .to(Long.MAX_VALUE)
             .withRate(10, Duration.millis(100)) //Duration.standardSeconds(2))
         )
         .apply(ParDo.of(new CounterFn()));
