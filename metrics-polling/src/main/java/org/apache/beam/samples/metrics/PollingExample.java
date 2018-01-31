@@ -19,6 +19,7 @@ import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.joda.time.Duration;
+import org.joda.time.Instant;
 
 public class PollingExample {
 
@@ -41,13 +42,14 @@ public class PollingExample {
         MetricsFilter.builder().addNameFilter(MetricNameFilter.inNamespace("PollingExample")).build());
     Iterable<MetricResult<Long>> counters = metrics.counters();
     for (MetricResult<Long> counter : counters) {
-      System.out.println(counter.name().name() + " : " + counter.attempted());
+      System.out.println(counter.name().name() + " : " + counter.attempted() + " " + Instant.now());
     }
   }
 
   public static void main(String[] args) {
     // Direct runner does block by default --runner=DirectRunner --blockOnRun=false
-    PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
+    System.out.println("START " + Instant.now());
+      PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
     Pipeline pipeline = Pipeline.create(options);
     pipeline
         .apply(
@@ -71,7 +73,7 @@ public class PollingExample {
 
 //    State state = result.waitUntilFinish(Duration.ZERO);
     State state = result.waitUntilFinish(Duration.standardSeconds(5));
-    System.out.println("Shutting down client after waitUntilFinish");
+    System.out.println("Shutting down client after waitUntilFinish " + Instant.now());
 
     scheduledFuture.cancel(true);
     executor.shutdownNow();
