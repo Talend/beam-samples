@@ -41,7 +41,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <beam.version>2.3.0-SNAPSHOT</beam.version>
+        <beam.version>2.4.0-SNAPSHOT</beam.version>
         <guava.version>20.0</guava.version>
 
         <hadoop.version>2.7.3</hadoop.version>
@@ -49,12 +49,12 @@
         <slf4j.version>1.7.25</slf4j.version>
         <spark.version>1.6.3</spark.version>
 
-        <spark2.version>2.2.0</spark2.version>
+        <spark2.version>2.2.1</spark2.version>
         <spark2.jackson.version>2.6.5</spark2.jackson.version>
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
 
-        <apex.core.version>3.5.0-SNAPSHOT</apex.core.version>
+        <apex.core.version>3.6.0</apex.core.version>
 
         <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
         <maven-shade-plugin.version>3.0.0</maven-shade-plugin.version>
@@ -79,6 +79,7 @@
 
     <dependencyManagement>
         <dependencies>
+
             <!-- SDK -->
             <dependency>
                 <groupId>org.apache.beam</groupId>
@@ -147,6 +148,12 @@
             <dependency>
                 <groupId>org.apache.beam</groupId>
                 <artifactId>beam-sdks-java-io-kafka</artifactId>
+                <version>${beam.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.beam</groupId>
+                <artifactId>beam-sdks-java-io-kinesis</artifactId>
                 <version>${beam.version}</version>
             </dependency>
 
@@ -261,11 +268,13 @@
                 <artifactId>beam-runners-spark</artifactId>
                 <version>${beam.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-all</artifactId>
@@ -277,13 +286,11 @@
     <profiles>
         <profile>
             <id>direct-runner</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <dependencies>
                 <dependency>
                     <groupId>org.apache.beam</groupId>
                     <artifactId>beam-runners-direct-java</artifactId>
+                    <scope>runtime</scope>
                 </dependency>
             </dependencies>
         </profile>
@@ -293,6 +300,7 @@
                 <dependency>
                     <groupId>org.apache.beam</groupId>
                     <artifactId>beam-runners-flink_2.10</artifactId>
+                    <scope>runtime</scope>
                 </dependency>
             </dependencies>
         </profile>
@@ -360,44 +368,51 @@
                     <groupId>org.apache.beam</groupId>
                     <artifactId>beam-runners-spark</artifactId>
                     <version>${beam.version}</version>
+                    <scope>runtime</scope>
                 </dependency>
-
                 <dependency>
                     <groupId>org.apache.spark</groupId>
                     <artifactId>spark-core_2.11</artifactId>
                     <version>${spark2.version}</version>
+                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.spark</groupId>
                     <artifactId>spark-sql_2.11</artifactId>
                     <version>${spark2.version}</version>
+                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.spark</groupId>
                     <artifactId>spark-catalyst_2.11</artifactId>
                     <version>${spark2.version}</version>
+                    <scope>runtime</scope>
                 </dependency>
                 <!-- streaming dependency for as long as DStream is used-->
                 <dependency>
                     <groupId>org.apache.spark</groupId>
                     <artifactId>spark-streaming_2.11</artifactId>
                     <version>${spark2.version}</version>
+                    <scope>runtime</scope>
                 </dependency>
 
                 <dependency>
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-core</artifactId>
                     <version>${spark2.jackson.version}</version>
+                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-annotations</artifactId>
                     <version>${spark2.jackson.version}</version>
+                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-databind</artifactId>
                     <version>${spark2.jackson.version}</version>
+                    <scope>runtime</scope>
                 </dependency>
             </dependencies>
         </profile>
@@ -407,6 +422,7 @@
                 <dependency>
                     <groupId>org.apache.beam</groupId>
                     <artifactId>beam-runners-google-cloud-dataflow-java</artifactId>
+                    <scope>runtime</scope>
                 </dependency>
             </dependencies>
         </profile>
@@ -417,11 +433,13 @@
                     <groupId>org.apache.beam</groupId>
                     <artifactId>beam-runners-apex</artifactId>
                     <version>${beam.version}</version>
+                    <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.apex</groupId>
                     <artifactId>apex-engine</artifactId>
                     <version>${apex.core.version}</version>
+                    <scope>runtime</scope>
                 </dependency>
             </dependencies>
         </profile>
@@ -464,11 +482,29 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>shaded</shadedClassifierName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven-enforcer-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[3.2,)</version>
+                                </requireMavenVersion>
+                            </rules>
                         </configuration>
                     </execution>
                 </executions>
