@@ -56,8 +56,10 @@
 
         <apex.core.version>3.6.0</apex.core.version>
 
+        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+        <maven-enforcer-plugin.version>3.0.0-M1</maven-enforcer-plugin.version>
         <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
-        <maven-shade-plugin.version>3.0.0</maven-shade-plugin.version>
+        <maven-shade-plugin.version>3.1.0</maven-shade-plugin.version>
     </properties>
 
     <modules>
@@ -451,7 +453,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
