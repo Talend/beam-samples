@@ -20,6 +20,12 @@
             <artifactId>beam-sdks-java-core</artifactId>
         </dependency>
 
+        <!-- S3 -->
+        <dependency>
+            <groupId>org.apache.beam</groupId>
+            <artifactId>beam-sdks-java-io-amazon-web-services</artifactId>
+        </dependency>
+
         <!-- HDFS -->
         <dependency>
             <groupId>org.apache.beam</groupId>
