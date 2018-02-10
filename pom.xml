@@ -48,6 +48,7 @@
         <jackson.version>2.7.2</jackson.version>
         <slf4j.version>1.7.25</slf4j.version>
         <spark.version>1.6.3</spark.version>
+        <kafka-clients.version>0.9.0.1</kafka-clients.version>
 
         <spark2.version>2.2.1</spark2.version>
         <spark2.jackson.version>2.6.5</spark2.jackson.version>
