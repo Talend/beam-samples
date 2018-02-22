@@ -27,7 +27,6 @@ import org.apache.beam.sdk.options.DefaultValueFactory;
 import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
-import org.apache.beam.sdk.transforms.Create;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,8 +75,7 @@ public class IngestToS3 {
 
     Pipeline pipeline = Pipeline.create(options);
     pipeline
-        .apply("CreateSomeData", Create.of("1", "2", "3", "4"))
-//        .apply("ReadFromGDELTFile", TextIO.read().from(options.getInput()))
+        .apply("ReadFromGDELTFile", TextIO.read().from(options.getInput()))
         .apply("WriteToFS", TextIO.write().to(options.getOutput()));
     pipeline.run();
   }
