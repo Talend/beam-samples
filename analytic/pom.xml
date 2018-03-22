@@ -27,6 +27,7 @@
         </dependency>
 
         <!-- IOs -->
+        <!--
         <dependency>
             <groupId>org.apache.beam</groupId>
             <artifactId>beam-sdks-java-io-kafka</artifactId>
@@ -41,13 +42,16 @@
             <groupId>org.apache.beam</groupId>
             <artifactId>beam-sdks-java-io-hadoop-file-system</artifactId>
         </dependency>
+        -->
 
         <!-- ActiveMQ -->
+        <!--
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-client</artifactId>
             <version>5.14.3</version>
         </dependency>
+        -->
 
     </dependencies>
 

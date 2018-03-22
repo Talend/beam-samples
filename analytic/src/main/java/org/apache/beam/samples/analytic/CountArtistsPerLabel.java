@@ -17,7 +17,7 @@ public class CountArtistsPerLabel {
         Pipeline pipeline = Pipeline.create(options);
 
         pipeline
-                .apply(TextIO.read().from("hdfs://localhost/artists.csv"))
+                .apply(TextIO.read().from("/home/jbonofre/artists.csv"))
                 .apply(ParDo.of(new DoFn<String, String>() {
                     @ProcessElement
                     public void processElement(ProcessContext processContext) {
@@ -32,7 +32,7 @@ public class CountArtistsPerLabel {
                         return "{\"" + element.getKey() + "\": \"" + element.getValue() + "\"}";
                     }
                 }))
-                .apply(TextIO.write().to("hdfs://localhost/label.json"));
+                .apply(TextIO.write().to("/home/jbonofre/label.json"));
 
         pipeline.run();
     }
