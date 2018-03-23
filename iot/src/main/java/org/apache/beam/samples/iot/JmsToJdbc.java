@@ -9,7 +9,11 @@ import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.transforms.windowing.AfterWatermark;
+import org.apache.beam.sdk.transforms.windowing.FixedWindows;
+import org.apache.beam.sdk.transforms.windowing.Window;
 import org.apache.derby.jdbc.ClientDataSource;
+import org.joda.time.Duration;
 
 /**
  * Retrieve messages from JMS and store on HDFS.
@@ -22,7 +26,6 @@ public class JmsToJdbc {
         ClientDataSource dataSource = new ClientDataSource();
         dataSource.setPortNumber(1527);
         dataSource.setServerName("localhost");
-        dataSource.setCreateDatabase("create");
         dataSource.setDatabaseName("test");
 
         PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
@@ -36,6 +39,10 @@ public class JmsToJdbc {
                         processContext.output(element.getPayload());
                     }
                 }))
+                .apply(Window.<String>into(FixedWindows.of(Duration.standardSeconds(30)))
+                        .triggering(AfterWatermark.pastEndOfWindow())
+                        .withAllowedLateness(Duration.ZERO)
+                        .discardingFiredPanes())
                 .apply(JdbcIO.<String>write().withDataSourceConfiguration(
                         JdbcIO.DataSourceConfiguration.create(dataSource))
                         .withStatement("insert into test values(?)")
