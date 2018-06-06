@@ -40,9 +40,9 @@ public class PollingExample {
   public static void queryMetrics(PipelineResult result) {
     MetricQueryResults metrics = result.metrics().queryMetrics(
         MetricsFilter.builder().addNameFilter(MetricNameFilter.inNamespace("PollingExample")).build());
-    Iterable<MetricResult<Long>> counters = metrics.counters();
+    Iterable<MetricResult<Long>> counters = metrics.getCounters();
     for (MetricResult<Long> counter : counters) {
-      System.out.println(counter.name().name() + " : " + counter.attempted() + " " + Instant.now());
+      System.out.println(counter.getName().name() + " : " + counter.getAttempted() + " " + Instant.now());
     }
   }
 
