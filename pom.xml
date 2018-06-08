@@ -54,6 +54,7 @@
         <spark2.jackson.version>2.6.5</spark2.jackson.version>
         <junit.version>4.12</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
+        <parquet.version>1.10.0</parquet.version>
 
         <apex.core.version>3.6.0</apex.core.version>
 
