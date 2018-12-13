@@ -10,3 +10,5 @@ target
 .classpath
 .project
 
+# Visual Studio Code
+.vscode/
