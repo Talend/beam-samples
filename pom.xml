@@ -48,7 +48,7 @@
 
         <spark.version>1.6.3</spark.version>
         <jackson.version>2.7.2</jackson.version>
-        <spark2.version>2.3.2</spark2.version>
+        <spark2.version>2.4.0</spark2.version>
         <spark2.jackson.version>2.6.7.1</spark2.jackson.version>
 
         <kafka-clients.version>1.1.0</kafka-clients.version>
@@ -344,16 +344,6 @@
                 </dependency>
                 <dependency>
                     <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                    <version>${jackson.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-annotations</artifactId>
-                    <version>${jackson.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-databind</artifactId>
                     <version>${jackson.version}</version>
                 </dependency>
@@ -405,19 +395,6 @@
                     <groupId>org.apache.spark</groupId>
                     <artifactId>spark-streaming_2.11</artifactId>
                     <version>${spark2.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                    <version>${spark2.jackson.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-annotations</artifactId>
-                    <version>${spark2.jackson.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
