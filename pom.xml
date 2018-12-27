@@ -499,23 +499,6 @@
                 </dependency>
             </dependencies>
         </profile>
-        <profile>
-            <id>apex-runner</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.apache.beam</groupId>
-                    <artifactId>beam-runners-apex</artifactId>
-                    <version>${beam.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.apex</groupId>
-                    <artifactId>apex-engine</artifactId>
-                    <version>${apex.core.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-            </dependencies>
-        </profile>
 
         <profile>
             <id>release-repo</id>
