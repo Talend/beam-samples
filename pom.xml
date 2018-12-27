@@ -277,6 +277,12 @@
 
             <dependency>
                 <groupId>org.apache.beam</groupId>
+                <artifactId>beam-runners-samza</artifactId>
+                <version>${beam.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.beam</groupId>
                 <artifactId>beam-runners-spark</artifactId>
                 <version>${beam.version}</version>
             </dependency>
@@ -312,6 +318,17 @@
                 <dependency>
                     <groupId>org.apache.beam</groupId>
                     <artifactId>beam-runners-flink_2.11</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>samza-runner</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.beam</groupId>
+                    <artifactId>beam-runners-samza</artifactId>
+                    <version>${beam.version}</version>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
