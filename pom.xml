@@ -41,7 +41,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <beam.version>2.10.0-SNAPSHOT</beam.version>
+        <beam.version>2.11.0-SNAPSHOT</beam.version>
         <guava.version>20.0</guava.version>
 
         <hadoop.version>2.7.3</hadoop.version>
@@ -503,9 +503,9 @@
             <id>release-repo</id>
             <repositories>
                 <repository>
-                    <id>Release 2.9.0</id>
-                    <name>Release 2.9.0</name>
-                    <url>https://repository.apache.org/content/repositories/orgapachebeam-1054/</url>
+                    <id>Release 2.10.0</id>
+                    <name>Release 2.10.0</name>
+                    <url>https://repository.apache.org/content/repositories/orgapachebeam-1056/</url>
                 </repository>
             </repositories>
         </profile>
