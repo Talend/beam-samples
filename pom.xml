@@ -41,8 +41,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <beam.version>2.12.0-SNAPSHOT</beam.version>
-        <guava.version>20.0</guava.version>
+        <beam.version>2.13.0-SNAPSHOT</beam.version>
 
         <hadoop.version>2.7.3</hadoop.version>
 
@@ -128,15 +127,6 @@
                 <groupId>org.apache.beam</groupId>
                 <artifactId>beam-sdks-java-io-google-cloud-platform</artifactId>
                 <version>${beam.version}</version>
-            </dependency>
-
-            <!-- This should not be explicit but it is needed because
-                 GCP IOs depend on the same version of guava than Beam and Hadoop
-                 leaks a different version -->
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
             </dependency>
 
             <dependency>
@@ -503,9 +493,9 @@
             <id>release-repo</id>
             <repositories>
                 <repository>
-                    <id>Release 2.10.0</id>
-                    <name>Release 2.10.0</name>
-                    <url>https://repository.apache.org/content/repositories/orgapachebeam-1056/</url>
+                    <id>Release 2.12.0</id>
+                    <name>Release 2.12.0</name>
+                    <url>https://repository.apache.org/content/repositories/orgapachebeam-1066/</url>
                 </repository>
             </repositories>
         </profile>
