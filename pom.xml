@@ -495,7 +495,7 @@
                 <repository>
                     <id>Release 2.12.0</id>
                     <name>Release 2.12.0</name>
-                    <url>https://repository.apache.org/content/repositories/orgapachebeam-1066/</url>
+                    <url>https://repository.apache.org/content/repositories/orgapachebeam-1068/</url>
                 </repository>
             </repositories>
         </profile>
