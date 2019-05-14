@@ -38,47 +38,58 @@ public class PollingExample {
   }
 
   public static void queryMetrics(PipelineResult result) {
-    MetricQueryResults metrics = result.metrics().queryMetrics(
-        MetricsFilter.builder().addNameFilter(MetricNameFilter.inNamespace("PollingExample")).build());
+    MetricQueryResults metrics =
+        result
+            .metrics()
+            .queryMetrics(
+                MetricsFilter.builder()
+                    .addNameFilter(MetricNameFilter.inNamespace("PollingExample"))
+                    .build());
     Iterable<MetricResult<Long>> counters = metrics.getCounters();
     for (MetricResult<Long> counter : counters) {
-      System.out.println(counter.getName().name() + " : " + counter.getAttempted() + " " + Instant.now());
+      System.out.println(
+          counter.getName().getName() + " : " + counter.getAttempted() + " " + Instant.now());
     }
   }
 
   public static void main(String[] args) {
     // Direct runner does block by default --runner=DirectRunner --blockOnRun=false
     System.out.println("START " + Instant.now());
-      PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
+    PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
     Pipeline pipeline = Pipeline.create(options);
     pipeline
         .apply(
-          GenerateSequence
-              .from(0)
-              .to(Long.MAX_VALUE)
-            .withRate(10, Duration.millis(100)) //Duration.standardSeconds(2))
-        )
+            GenerateSequence.from(0)
+                .to(Long.MAX_VALUE)
+                .withRate(10, Duration.millis(100)) // Duration.standardSeconds(2))
+            )
         .apply(ParDo.of(new CounterFn()));
 
     final PipelineResult result = pipeline.run();
 
     // We create a thread to poll the metrics until waitUntilFinish time
-    //TODO: Work on failure scenarios for the threads
+    // TODO: Work on failure scenarios for the threads
     ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-    ScheduledFuture<?> scheduledFuture = executor.scheduleAtFixedRate(new Runnable() {
-          @Override public void run() {
-            queryMetrics(result);
-          }
-        }, 0, 500, TimeUnit.MILLISECONDS);
+    ScheduledFuture<?> scheduledFuture =
+        executor.scheduleAtFixedRate(
+            new Runnable() {
+              @Override
+              public void run() {
+                queryMetrics(result);
+              }
+            },
+            0,
+            500,
+            TimeUnit.MILLISECONDS);
 
-//    State state = result.waitUntilFinish(Duration.ZERO);
+    //    State state = result.waitUntilFinish(Duration.ZERO);
     State state = result.waitUntilFinish(Duration.standardSeconds(5));
     System.out.println("Shutting down client after waitUntilFinish " + Instant.now());
 
     scheduledFuture.cancel(true);
     executor.shutdownNow();
 
-    //This is a hack to force the finish
+    // This is a hack to force the finish
     System.exit(0);
   }
 }
