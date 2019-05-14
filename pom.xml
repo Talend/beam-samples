@@ -69,6 +69,7 @@
         <module>EventsByLocation</module>
         <module>EventsToIOs</module>
         <module>IoTEventsProcess</module>
+        <module>file-parsing</module>
         <module>GoodAndBadGroupReduce</module>
         <module>analytic</module>
         <module>data-ingestion</module>
@@ -493,8 +494,8 @@
             <id>release-repo</id>
             <repositories>
                 <repository>
-                    <id>Release 2.12.0</id>
-                    <name>Release 2.12.0</name>
+                    <id>Release Repo</id>
+                    <name>Release Repo</name>
                     <url>https://repository.apache.org/content/repositories/orgapachebeam-1068/</url>
                 </repository>
             </repositories>
