@@ -41,13 +41,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <beam.version>2.13.0-SNAPSHOT</beam.version>
+        <beam.version>2.14.0-SNAPSHOT</beam.version>
 
         <hadoop.version>2.7.3</hadoop.version>
 
         <spark.version>1.6.3</spark.version>
         <jackson.version>2.7.2</jackson.version>
-        <spark2.version>2.4.0</spark2.version>
+        <spark2.version>2.4.3</spark2.version>
         <spark2.jackson.version>2.6.7.1</spark2.jackson.version>
 
         <kafka-clients.version>1.0.0</kafka-clients.version>
