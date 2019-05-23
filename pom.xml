@@ -496,7 +496,7 @@
                 <repository>
                     <id>Release Repo</id>
                     <name>Release Repo</name>
-                    <url>https://repository.apache.org/content/repositories/orgapachebeam-1068/</url>
+                    <url>https://repository.apache.org/content/repositories/orgapachebeam-1069/</url>
                 </repository>
             </repositories>
         </profile>
