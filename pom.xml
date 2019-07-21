@@ -42,14 +42,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <beam.version>2.15.0-SNAPSHOT</beam.version>
-
         <hadoop.version>2.7.3</hadoop.version>
-
-        <spark.version>1.6.3</spark.version>
-        <jackson.version>2.7.2</jackson.version>
-        <spark2.version>2.4.3</spark2.version>
-        <spark2.jackson.version>2.6.7.1</spark2.jackson.version>
-
+        <spark.version>2.4.3</spark.version>
         <kafka-clients.version>1.0.0</kafka-clients.version>
         <parquet.version>1.10.0</parquet.version>
 
@@ -390,7 +384,6 @@
                 <dependency>
                     <groupId>org.apache.beam</groupId>
                     <artifactId>beam-runners-samza</artifactId>
-                    <version>${beam.version}</version>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
@@ -402,78 +395,32 @@
                 <dependency>
                     <groupId>org.apache.beam</groupId>
                     <artifactId>beam-runners-spark</artifactId>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.spark</groupId>
-                    <artifactId>spark-streaming_2.10</artifactId>
-                    <version>${spark.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.spark</groupId>
-                    <artifactId>spark-core_2.10</artifactId>
-                    <version>${spark.version}</version>
-                    <scope>runtime</scope>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.slf4j</groupId>
-                            <artifactId>jul-to-slf4j</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                    <version>${jackson.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.fasterxml.jackson.module</groupId>
-                    <artifactId>jackson-module-scala_2.10</artifactId>
-                    <version>${jackson.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-
-        <profile>
-            <id>spark2-runner</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.apache.beam</groupId>
-                    <artifactId>beam-runners-spark</artifactId>
                     <version>${beam.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.spark</groupId>
                     <artifactId>spark-core_2.11</artifactId>
-                    <version>${spark2.version}</version>
+                    <version>${spark.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.spark</groupId>
                     <artifactId>spark-sql_2.11</artifactId>
-                    <version>${spark2.version}</version>
+                    <version>${spark.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.spark</groupId>
                     <artifactId>spark-catalyst_2.11</artifactId>
-                    <version>${spark2.version}</version>
+                    <version>${spark.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <!-- streaming dependency for as long as DStream is used-->
                 <dependency>
                     <groupId>org.apache.spark</groupId>
                     <artifactId>spark-streaming_2.11</artifactId>
-                    <version>${spark2.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                    <version>${spark2.jackson.version}</version>
+                    <version>${spark.version}</version>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
