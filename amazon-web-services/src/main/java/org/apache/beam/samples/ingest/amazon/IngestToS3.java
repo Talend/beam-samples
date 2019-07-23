@@ -35,8 +35,8 @@ public class IngestToS3 {
   private static final Logger LOG = LoggerFactory.getLogger(IngestToS3.class);
 
   /** Specific pipeline options. */
-  //  private interface Options extends PipelineOptions {
-  private interface Options extends S3Options {
+  //  public interface Options extends PipelineOptions {
+  public interface Options extends S3Options {
 
     String GDELT_EVENTS_URL = "s3://gdelt-open-data/events/";
 

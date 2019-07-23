@@ -41,7 +41,7 @@ public class JoinInStreaming {
   /**
    * Specific pipeline options.
    */
-  private interface Options extends PipelineOptions {
+  public interface Options extends PipelineOptions {
 
     @Description("Kafka bootstrap servers")
     @Default.String(BOOTSTRAP_SERVERS)

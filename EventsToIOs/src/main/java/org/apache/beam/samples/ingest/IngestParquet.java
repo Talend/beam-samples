@@ -65,7 +65,7 @@ public class IngestParquet {
   /**
    * Specific pipeline options.
    */
-  private interface Options extends PipelineOptions {
+  public interface Options extends PipelineOptions {
     @Description("Output Path")
     String getOutput();
     void setOutput(String value);

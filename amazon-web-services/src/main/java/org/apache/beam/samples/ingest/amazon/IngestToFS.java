@@ -38,8 +38,8 @@ public class IngestToFS {
   /**
    * Specific pipeline options.
    */
-//  private interface Options extends PipelineOptions {
-   private interface Options extends HadoopFileSystemOptions {
+//  public interface Options extends PipelineOptions {
+   public interface Options extends HadoopFileSystemOptions {
 
     String GDELT_EVENTS_URL = "s3a://gdelt-open-data/events/";
 

@@ -36,7 +36,7 @@ public class EventsByLocation {
     /**
      * Specific pipeline options.
      */
-    private interface Options extends PipelineOptions {
+    public interface Options extends PipelineOptions {
         String GDELT_EVENTS_URL = "http://data.gdeltproject.org/events/";
 
         @Description("GDELT file date")

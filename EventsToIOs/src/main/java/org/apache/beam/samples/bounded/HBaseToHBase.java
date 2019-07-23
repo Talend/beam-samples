@@ -43,7 +43,7 @@ public class HBaseToHBase {
   /**
    * Specific pipeline options.
    */
-  private interface Options extends PipelineOptions {
+  public interface Options extends PipelineOptions {
     @Description("Input Path")
     String getInput();
     void setInput(String value);

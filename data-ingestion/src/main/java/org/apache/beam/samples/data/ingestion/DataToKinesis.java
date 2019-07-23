@@ -26,7 +26,7 @@ public class DataToKinesis {
   /**
    * Specific pipeline options.
    */
-  private interface Options extends PipelineOptions {
+  public interface Options extends PipelineOptions {
     @Description("AWS Access Key")
     String getAccessKey();
     void setAccessKey(String value);

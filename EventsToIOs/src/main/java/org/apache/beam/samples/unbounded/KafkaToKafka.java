@@ -46,7 +46,7 @@ public class KafkaToKafka {
     /**
      * Specific pipeline options.
      */
-    private interface Options extends PipelineOptions {
+    public interface Options extends PipelineOptions {
         @Description("Kafka Bootstrap Servers")
         @Default.String("localhost:9092")
         String getKafkaServer();
