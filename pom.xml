@@ -446,12 +446,12 @@
         </profile>
 
         <profile>
-            <id>release-repo</id>
+            <id>beam-release-repo</id>
             <repositories>
                 <repository>
-                    <id>Release Repo</id>
-                    <name>Release Repo</name>
-                    <url>https://repository.apache.org/content/repositories/orgapachebeam-1069/</url>
+                    <id>Beam Release Repo</id>
+                    <name>Beam Release Repo</name>
+                    <url>https://repository.apache.org/content/repositories/orgapachebeam-1080/</url>
                 </repository>
             </repositories>
         </profile>
