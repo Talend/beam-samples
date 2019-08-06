@@ -430,12 +430,6 @@
                     <artifactId>beam-runners-spark</artifactId>
                     <version>${beam.version}</version>
                     <scope>runtime</scope>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>com.fasterxml.jackson.module</groupId>
-                            <artifactId>jackson-module-scala_2.11</artifactId>
-                        </exclusion>
-                    </exclusions>
                 </dependency>
                 <dependency>
                     <groupId>com.thoughtworks.paranamer</groupId>
