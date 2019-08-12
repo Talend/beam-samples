@@ -419,6 +419,27 @@
                     <version>${spark.version}</version>
                     <scope>runtime</scope>
                 </dependency>
+                <!-- We may need to pin these dependencies at runtime to avoid
+                    issues with some Spark deps and Scala 2.12 (They probably
+                    should be upgraded as Beam and Spark versions evolve. -->
+                    <dependency>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-core</artifactId>
+                        <version>2.9.9</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-databind</artifactId>
+                        <version>2.9.9.3</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.fasterxml.jackson.module</groupId>
+                        <artifactId>jackson-module-scala_2.11</artifactId>
+                        <version>2.9.9</version>
+                        <scope>runtime</scope>
+                    </dependency>
             </dependencies>
         </profile>
 
