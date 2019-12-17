@@ -20,18 +20,15 @@ package org.apache.beam.samples.sql;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.generic.GenericRecordBuilder;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.AvroCoder;
 import org.apache.beam.sdk.extensions.sql.SqlTransform;
 import org.apache.beam.sdk.extensions.sql.example.model.Customer;
 import org.apache.beam.sdk.extensions.sql.example.model.Order;
-import org.apache.beam.sdk.io.AvroIO;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.schemas.utils.AvroUtils;
 import org.apache.beam.sdk.transforms.Create;
-import org.apache.beam.sdk.transforms.Filter;
 import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.transforms.SerializableFunction;
 import org.apache.beam.sdk.transforms.SimpleFunction;
@@ -39,6 +36,7 @@ import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.PCollectionTuple;
 import org.apache.beam.sdk.values.Row;
 import org.apache.beam.sdk.values.TupleTag;
+import org.apache.beam.sdk.values.TypeDescriptor;
 
 /**
  * This example uses Beam SQL DSL to query a data pipeline with Java objects in it.
@@ -129,7 +127,8 @@ class BeamSqlAvroExample {
         AvroUtils.getFromRowFunction(GenericRecord.class);
     org.apache.beam.sdk.schemas.Schema beamSchema = AvroUtils.toBeamSchema(schema);
     if (!input.hasSchema()) {
-      input.setSchema(beamSchema, toRowFunction, fromRowFunction);
+      input.setSchema(
+          beamSchema, TypeDescriptor.of(GenericRecord.class), toRowFunction, fromRowFunction);
     }
     return input;
   }

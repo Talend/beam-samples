@@ -31,6 +31,7 @@ import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.PCollectionTuple;
 import org.apache.beam.sdk.values.Row;
 import org.apache.beam.sdk.values.TupleTag;
+import org.apache.beam.sdk.values.TypeDescriptor;
 
 /**
  * This is a quick example, which uses Beam SQL DSL to create a data pipeline.
@@ -64,7 +65,10 @@ class BeamSqlExample {
             .apply(
                 Create.of(row1, row2, row3)
                     .withSchema(
-                        type, SerializableFunctions.identity(), SerializableFunctions.identity()));
+                        type,
+                        TypeDescriptor.of(Row.class),
+                        SerializableFunctions.identity(),
+                        SerializableFunctions.identity()));
 
     // Case 1. run a simple SQL query over input PCollection with BeamSql.simpleQuery;
     PCollection<Row> outputStream =
