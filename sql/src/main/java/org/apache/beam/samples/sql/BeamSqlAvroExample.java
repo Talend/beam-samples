@@ -27,6 +27,7 @@ import org.apache.beam.sdk.extensions.sql.example.model.Customer;
 import org.apache.beam.sdk.extensions.sql.example.model.Order;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
+import org.apache.beam.sdk.schemas.SchemaCoder;
 import org.apache.beam.sdk.schemas.utils.AvroUtils;
 import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.transforms.MapElements;
@@ -121,14 +122,9 @@ class BeamSqlAvroExample {
 
   private static PCollection<GenericRecord> inferSchema(
       PCollection<GenericRecord> input, org.apache.avro.Schema schema) {
-    SerializableFunction<GenericRecord, Row> toRowFunction =
-        AvroUtils.getToRowFunction(GenericRecord.class, schema);
-    SerializableFunction<Row, GenericRecord> fromRowFunction =
-        AvroUtils.getFromRowFunction(GenericRecord.class);
     org.apache.beam.sdk.schemas.Schema beamSchema = AvroUtils.toBeamSchema(schema);
     if (!input.hasSchema()) {
-      input.setSchema(
-          beamSchema, TypeDescriptor.of(GenericRecord.class), toRowFunction, fromRowFunction);
+      input.setCoder(AvroUtils.schemaCoder(schema));
     }
     return input;
   }

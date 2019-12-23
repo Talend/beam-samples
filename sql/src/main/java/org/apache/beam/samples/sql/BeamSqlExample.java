@@ -24,14 +24,11 @@ import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.schemas.Schema;
 import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.transforms.MapElements;
-import org.apache.beam.sdk.transforms.SerializableFunctions;
 import org.apache.beam.sdk.transforms.SimpleFunction;
-import org.apache.beam.sdk.values.PBegin;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.PCollectionTuple;
 import org.apache.beam.sdk.values.Row;
 import org.apache.beam.sdk.values.TupleTag;
-import org.apache.beam.sdk.values.TypeDescriptor;
 
 /**
  * This is a quick example, which uses Beam SQL DSL to create a data pipeline.
@@ -49,26 +46,18 @@ import org.apache.beam.sdk.values.TypeDescriptor;
 class BeamSqlExample {
   public static void main(String[] args) {
     PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
-    Pipeline p = Pipeline.create(options);
+    Pipeline pipeline = Pipeline.create(options);
 
     // define the input row format
-    Schema type =
+    Schema schema =
         Schema.builder().addInt32Field("c1").addStringField("c2").addDoubleField("c3").build();
 
-    Row row1 = Row.withSchema(type).addValues(1, "row", 1.0).build();
-    Row row2 = Row.withSchema(type).addValues(2, "row", 2.0).build();
-    Row row3 = Row.withSchema(type).addValues(3, "row", 3.0).build();
+    Row row1 = Row.withSchema(schema).addValues(1, "row", 1.0).build();
+    Row row2 = Row.withSchema(schema).addValues(2, "row", 2.0).build();
+    Row row3 = Row.withSchema(schema).addValues(3, "row", 3.0).build();
 
     // create a source PCollection with Create.of();
-    PCollection<Row> inputTable =
-        PBegin.in(p)
-            .apply(
-                Create.of(row1, row2, row3)
-                    .withSchema(
-                        type,
-                        TypeDescriptor.of(Row.class),
-                        SerializableFunctions.identity(),
-                        SerializableFunctions.identity()));
+    PCollection<Row> inputTable = pipeline.apply(Create.of(row1, row2, row3).withRowSchema(schema));
 
     // Case 1. run a simple SQL query over input PCollection with BeamSql.simpleQuery;
     PCollection<Row> outputStream =
@@ -108,6 +97,6 @@ class BeamSqlExample {
               }
             }));
 
-    p.run().waitUntilFinish();
+    pipeline.run().waitUntilFinish();
   }
 }
