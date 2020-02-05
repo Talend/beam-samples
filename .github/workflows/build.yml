@@ -14,7 +14,7 @@ jobs:
       fail-fast: true
     steps:
       - name: Checkout jbonofre/beam-samples
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
       - name: Run build
         run:
           mvn clean verify -Pbeam-release-repo -Dbeam.version=${{ matrix.BEAM_VERSION }}
