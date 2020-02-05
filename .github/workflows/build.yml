@@ -15,6 +15,13 @@ jobs:
     steps:
       - name: Checkout jbonofre/beam-samples
         uses: actions/checkout@v2
+      - name: Cache maven artifacts
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
       - name: Run build
         run:
           mvn clean verify -Pbeam-release-repo -Dbeam.version=${{ matrix.BEAM_VERSION }}
