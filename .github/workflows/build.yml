@@ -1,0 +1,17 @@
+name: Java CI
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        BEAM_VERSION:
+          - 2.19.0
+          - 2.20.0-SNAPSHOT
+      fail-fast: true
+    steps:
+      - name: Checkout jbonofre/beam-samples
+      - uses: actions/checkout@v2
+      - name: Run build
+        run:
+          mvn clean verify -Pbeam-release-repo -Dbeam.version=${{ matrix.BEAM_VERSION }}
