@@ -1,3 +1,5 @@
+![Java CI](https://github.com/jbonofre/beam-samples/workflows/Java%20CI/badge.svg)
+
 # Apache Beam samples
 
 This project is composed by several samples. The purpose is to download and analyze GDELT Project data
