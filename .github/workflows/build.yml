@@ -1,5 +1,8 @@
 name: Java CI
-on: [push]
+on:
+  push:
+  schedule:
+    - cron: '0 0 * * *' # Once per day at midnight
 jobs:
   build:
     runs-on: ubuntu-latest
