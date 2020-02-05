@@ -514,6 +514,11 @@
                     <name>Beam Release Repo</name>
                     <url>https://repository.apache.org/content/repositories/orgapachebeam-1091/</url>
                 </repository>
+                <!-- TODO Remove this is a temporal hack to fix missing confluent repo in KafkaIO pom -->
+                <repository>
+                    <id>confluent</id>
+                    <url>https://packages.confluent.io/maven/</url>
+                </repository>
             </repositories>
         </profile>
     </profiles>
