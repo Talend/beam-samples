@@ -43,9 +43,10 @@
 
         <beam.version>2.21.0-SNAPSHOT</beam.version>
         <hadoop.version>2.7.3</hadoop.version>
-        <spark.version>2.4.3</spark.version>
+        <jackson.version>2.10.2</jackson.version>
         <kafka-clients.version>1.0.0</kafka-clients.version>
         <parquet.version>1.10.0</parquet.version>
+        <spark.version>2.4.3</spark.version>
 
         <slf4j.version>1.7.25</slf4j.version>
         <junit.version>4.12</junit.version>
@@ -425,19 +426,19 @@
                     <dependency>
                         <groupId>com.fasterxml.jackson.core</groupId>
                         <artifactId>jackson-core</artifactId>
-                        <version>2.9.9</version>
+                        <version>${jackson.version}</version>
                         <scope>runtime</scope>
                     </dependency>
                     <dependency>
                         <groupId>com.fasterxml.jackson.core</groupId>
                         <artifactId>jackson-databind</artifactId>
-                        <version>2.9.9.3</version>
+                        <version>${jackson.version}</version>
                         <scope>runtime</scope>
                     </dependency>
                     <dependency>
                         <groupId>com.fasterxml.jackson.module</groupId>
                         <artifactId>jackson-module-scala_2.11</artifactId>
-                        <version>2.9.9</version>
+                        <version>${jackson.version}</version>
                         <scope>runtime</scope>
                     </dependency>
             </dependencies>
@@ -471,19 +472,19 @@
                 <dependency>
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-core</artifactId>
-                    <version>2.9.9</version>
+                    <version>${jackson.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-databind</artifactId>
-                    <version>2.9.9.3</version>
+                    <version>${jackson.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>com.fasterxml.jackson.module</groupId>
                     <artifactId>jackson-module-scala_2.12</artifactId>
-                    <version>2.9.9</version>
+                    <version>${jackson.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
