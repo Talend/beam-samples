@@ -1,13 +1,14 @@
 name: Java CI
 on:
-  push:
+  pull_request:
   schedule:
     - cron: '0 0 * * *' # Once per day at midnight
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
         BEAM_VERSION:
           - 2.19.0
           - 2.21.0-SNAPSHOT
@@ -24,4 +25,4 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Run build
         run:
-          mvn clean verify -Pbeam-release-repo -Dbeam.version=${{ matrix.BEAM_VERSION }}
+          mvn clean verify -Pbeam-release-repo -D"beam.version"="${{ matrix.BEAM_VERSION }}"
