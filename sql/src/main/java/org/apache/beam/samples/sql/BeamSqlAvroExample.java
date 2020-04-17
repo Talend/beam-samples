@@ -27,17 +27,14 @@ import org.apache.beam.sdk.extensions.sql.example.model.Customer;
 import org.apache.beam.sdk.extensions.sql.example.model.Order;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
-import org.apache.beam.sdk.schemas.SchemaCoder;
 import org.apache.beam.sdk.schemas.utils.AvroUtils;
 import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.transforms.MapElements;
-import org.apache.beam.sdk.transforms.SerializableFunction;
 import org.apache.beam.sdk.transforms.SimpleFunction;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.PCollectionTuple;
 import org.apache.beam.sdk.values.Row;
 import org.apache.beam.sdk.values.TupleTag;
-import org.apache.beam.sdk.values.TypeDescriptor;
 
 /**
  * This example uses Beam SQL DSL to query a data pipeline with Java objects in it.
@@ -109,13 +106,13 @@ class BeamSqlAvroExample {
     pipeline.run().waitUntilFinish();
   }
 
-  private static MapElements<Row, Row> logRecords(String suffix) {
+  private static MapElements<Row, Void> logRecords(String suffix) {
     return MapElements.via(
-        new SimpleFunction<Row, Row>() {
+        new SimpleFunction<Row, Void>() {
           @Override
-          public Row apply(Row input) {
+          public Void apply(Row input) {
             System.out.println(input.getValues() + suffix);
-            return input;
+            return null;
           }
         });
   }
