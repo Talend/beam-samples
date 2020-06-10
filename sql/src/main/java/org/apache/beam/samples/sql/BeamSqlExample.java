@@ -43,7 +43,7 @@ import org.apache.beam.sdk.values.TupleTag;
  * other runners require additional setup and are out of scope of the SQL examples. Please consult
  * Beam documentation on how to run pipelines.
  */
-class BeamSqlExample {
+public class BeamSqlExample {
   public static void main(String[] args) {
     PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
     Pipeline pipeline = Pipeline.create(options);

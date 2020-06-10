@@ -56,7 +56,7 @@ import org.apache.beam.sdk.values.TupleTag;
  *   <li>{@link Order} represents an order by a customer
  * </ul>
  */
-class BeamSqlAvroExample {
+public class BeamSqlAvroExample {
   public static void main(String[] args) {
     PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
     Pipeline pipeline = Pipeline.create(options);
