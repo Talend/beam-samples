@@ -29,17 +29,17 @@ jobs:
           mvn clean verify -Pbeam-release-repo -D"beam.version"="${{ matrix.BEAM_VERSION }}"
       - name: Run Avro SQL Pipeline - Flink Runner
         if: matrix.os != 'windows-latest'
-          run:
+          run: |
             mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pflink-runner -Dexec.args="--runner=FlinkRunner"
       - name: Run Avro SQL Pipeline - Spark Runner (Spark 2)
         if: matrix.os != 'windows-latest'
-          run:
+          run: |
             mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pspark-runner -Dexec.args="--runner=SparkRunner"
       - name: Run Avro SQL Pipeline - Spark Runner (Spark 3)
         if: matrix.os != 'windows-latest'
-          run:
+          run: |
             mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pspark3-runner -Dexec.args="--runner=SparkRunner"
       - name: Run Avro SQL Pipeline - Spark Structured Streaming Runner (Spark 2)
         if: matrix.os != 'windows-latest'
-          run:
+          run: |
             mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pspark-runner -Dexec.args="--runner=SparkStructuredStreamingRunner"
