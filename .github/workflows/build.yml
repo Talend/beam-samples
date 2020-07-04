@@ -12,7 +12,7 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
         BEAM_VERSION:
           - 2.22.0
-          - 2.23.0-SNAPSHOT
+          - 2.24.0-SNAPSHOT
       fail-fast: false
     steps:
       - name: Checkout jbonofre/beam-samples
