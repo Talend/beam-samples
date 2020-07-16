@@ -1,4 +1,4 @@
-name: Java CI
+name: Java 8
 on:
   push:
   pull_request:
@@ -17,6 +17,10 @@ jobs:
     steps:
       - name: Checkout jbonofre/beam-samples
         uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '8'
       - name: Cache maven artifacts
         uses: actions/cache@v2
         with:
