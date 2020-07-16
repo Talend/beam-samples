@@ -1,0 +1,42 @@
+name: Java 11
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * *' # Once per day at midnight
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        BEAM_VERSION:
+          - 2.23.0
+          - 2.24.0-SNAPSHOT
+      fail-fast: false
+    steps:
+      - name: Checkout jbonofre/beam-samples
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+      - name: Cache maven artifacts
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Run build
+        run:
+          mvn clean verify -Dmaven.compiler.release=11 -Pbeam-release-repo -D"beam.version"="${{ matrix.BEAM_VERSION }}"
+      # the execution of the individual samples is done only in Linux
+      - name: Run Avro SQL Pipeline - Flink Runner
+        if: matrix.os == 'ubuntu-latest'
+        run:
+          mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pflink-runner -Dexec.args="--runner=FlinkRunner"
+      - name: Run Avro SQL Pipeline - Spark Runner (Spark 3)
+        if: matrix.os == 'ubuntu-latest'
+        run:
+          mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pspark3-runner -Dexec.args="--runner=SparkRunner"
