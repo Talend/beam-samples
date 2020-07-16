@@ -30,6 +30,12 @@
             <groupId>org.apache.beam</groupId>
             <artifactId>beam-sdks-java-io-xml</artifactId>
         </dependency>
+        <!-- Add explicit xml bind dependency to avoid dependency issues with Java 11 -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>2.3.3</version>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.beam</groupId>
