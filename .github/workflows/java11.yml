@@ -30,7 +30,7 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Run build
         run:
-          mvn clean verify -Dmaven.compiler.release=11 -Pbeam-release-repo -D"beam.version"="${{ matrix.BEAM_VERSION }}"
+          mvn clean verify -D"maven.compiler.release"="11" -Pbeam-release-repo -D"beam.version"="${{ matrix.BEAM_VERSION }}"
       # the execution of the individual samples is done only in Linux
       - name: Run Avro SQL Pipeline - Flink Runner
         if: matrix.os == 'ubuntu-latest'
