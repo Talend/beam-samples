@@ -18,7 +18,7 @@ jobs:
       - name: Checkout jbonofre/beam-samples
         uses: actions/checkout@v2
       - name: Cache maven artifacts
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
