@@ -34,7 +34,7 @@ jobs:
       # Run some samples
       - name: Run Avro SQL Pipeline - Direct Runner
         run:
-          mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pdirect-runner -Dexec.args="--runner=DirectRunner"
+          mvn -pl sql exec:java -D"exec.mainClass"="org.apache.beam.samples.sql.BeamSqlAvroExample" -Pdirect-runner -D"exec.args"="--runner=DirectRunner"
       # Run some samples in linux only for more complex open source runners
       - name: Run Avro SQL Pipeline - Flink Runner
         if: matrix.os == 'ubuntu-latest'
