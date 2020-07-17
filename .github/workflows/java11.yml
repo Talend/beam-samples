@@ -28,10 +28,14 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Run build
+      - name: Build and Run Tests
         run:
           mvn clean verify -D"maven.compiler.release"="11" -Pbeam-release-repo -D"beam.version"="${{ matrix.BEAM_VERSION }}"
-      # the execution of the individual samples is done only in Linux
+      # Run some samples
+      - name: Run Avro SQL Pipeline - Direct Runner
+        run:
+          mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pdirect-runner -Dexec.args="--runner=DirectRunner"
+      # Run some samples in linux only for more complex open source runners
       - name: Run Avro SQL Pipeline - Flink Runner
         if: matrix.os == 'ubuntu-latest'
         run:
