@@ -23,6 +23,7 @@ import org.apache.beam.sdk.extensions.sql.example.model.Customer;
 import org.apache.beam.sdk.extensions.sql.example.model.Order;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
+import org.apache.beam.sdk.schemas.Schema;
 import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.transforms.SimpleFunction;
@@ -75,14 +76,18 @@ public class BeamSqlPojoExample {
                     + " WHERE countryOfResidence = 'Wonderland'"));
 
     // Output the results of the query:
-    customersFromWonderland.apply(logRecords(": is from Wonderland"));
+    customersFromWonderland
+        .apply(logRecords(": is from Wonderland"))
+        .setRowSchema(customersFromWonderland.getSchema());
 
     // Example 2. Query the results of the first query:
     PCollection<Row> totalInWonderland =
         customersFromWonderland.apply(SqlTransform.query("SELECT COUNT(id) FROM PCOLLECTION"));
 
     // Output the results of the query:
-    totalInWonderland.apply(logRecords(": total customers in Wonderland"));
+    totalInWonderland
+        .apply(logRecords(": total customers in Wonderland"))
+        .setRowSchema(totalInWonderland.getSchema());
 
     // Example 3. Query multiple PCollections of Java objects:
     PCollection<Row> ordersByGrault =
@@ -96,7 +101,9 @@ public class BeamSqlPojoExample {
                         + " WHERE customers.name = 'Grault'"));
 
     // Output the results of the query:
-    ordersByGrault.apply(logRecords(": ordered by 'Grault'"));
+    ordersByGrault
+        .apply(logRecords(": ordered by 'Grault'"))
+        .setRowSchema(ordersByGrault.getSchema());
 
     pipeline.run().waitUntilFinish();
   }

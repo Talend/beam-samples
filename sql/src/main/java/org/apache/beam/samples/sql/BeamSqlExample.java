@@ -60,42 +60,46 @@ public class BeamSqlExample {
     PCollection<Row> inputTable = pipeline.apply(Create.of(row1, row2, row3).withRowSchema(schema));
 
     // Case 1. run a simple SQL query over input PCollection with BeamSql.simpleQuery;
-    PCollection<Row> outputStream =
+    PCollection<Row> records =
         inputTable.apply(SqlTransform.query("select c1, c2, c3 from PCOLLECTION where c1 > 1"));
 
     // print the output record of case 1;
-    outputStream.apply(
-        "log_result",
-        MapElements.via(
-            new SimpleFunction<Row, Row>() {
-              @Override
-              public Row apply(Row input) {
-                // expect output:
-                //  PCOLLECTION: [3, row, 3.0]
-                //  PCOLLECTION: [2, row, 2.0]
-                System.out.println("PCOLLECTION: " + input.getValues());
-                return input;
-              }
-            }));
+    records
+        .apply(
+            "log_result",
+            MapElements.via(
+                new SimpleFunction<Row, Row>() {
+                  @Override
+                  public Row apply(Row input) {
+                    // expect output:
+                    //  PCOLLECTION: [3, row, 3.0]
+                    //  PCOLLECTION: [2, row, 2.0]
+                    System.out.println("PCOLLECTION: " + input.getValues());
+                    return input;
+                  }
+                }))
+        .setRowSchema(schema);
 
     // Case 2. run the query with SqlTransform.query over result PCollection of case 1.
-    PCollection<Row> outputStream2 =
-        PCollectionTuple.of(new TupleTag<>("CASE1_RESULT"), outputStream)
+    PCollection<Row> summedRecords =
+        PCollectionTuple.of(new TupleTag<>("CASE1_RESULT"), records)
             .apply(SqlTransform.query("select c2, sum(c3) from CASE1_RESULT group by c2"));
 
     // print the output record of case 2;
-    outputStream2.apply(
-        "log_result",
-        MapElements.via(
-            new SimpleFunction<Row, Row>() {
-              @Override
-              public Row apply(Row input) {
-                // expect output:
-                //  CASE1_RESULT: [row, 5.0]
-                System.out.println("CASE1_RESULT: " + input.getValues());
-                return input;
-              }
-            }));
+    summedRecords
+        .apply(
+            "log_result",
+            MapElements.via(
+                new SimpleFunction<Row, Row>() {
+                  @Override
+                  public Row apply(Row input) {
+                    // expect output:
+                    //  CASE1_RESULT: [row, 5.0]
+                    System.out.println("CASE1_RESULT: " + input.getValues());
+                    return input;
+                  }
+                }))
+        .setRowSchema(summedRecords.getSchema());
 
     pipeline.run().waitUntilFinish();
   }
