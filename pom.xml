@@ -40,7 +40,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <beam.version>2.26.0-SNAPSHOT</beam.version>
+        <beam.version>2.27.0-SNAPSHOT</beam.version>
         <hadoop.version>2.7.3</hadoop.version>
         <jackson.version>2.10.2</jackson.version>
         <kafka-clients.version>1.0.0</kafka-clients.version>
