@@ -42,6 +42,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <beam.version>2.27.0-SNAPSHOT</beam.version>
         <hadoop.version>2.7.3</hadoop.version>
+        <hbase.version>1.2.6</hbase.version>
         <jackson.version>2.10.2</jackson.version>
         <kafka-clients.version>1.0.0</kafka-clients.version>
         <parquet.version>1.10.0</parquet.version>
@@ -284,6 +285,12 @@
                         <artifactId>*</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.hbase</groupId>
+                <artifactId>hbase-shaded-client</artifactId>
+                <version>${hbase.version}</version>
             </dependency>
 
             <!-- Log -->
