@@ -334,7 +334,7 @@
 
             <dependency>
                 <groupId>org.apache.beam</groupId>
-                <artifactId>beam-runners-flink-1.10</artifactId>
+                <artifactId>beam-runners-flink-1.11</artifactId>
                 <version>${beam.version}</version>
             </dependency>
 
@@ -388,7 +388,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.beam</groupId>
-                    <artifactId>beam-runners-flink-1.10</artifactId>
+                    <artifactId>beam-runners-flink-1.11</artifactId>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
