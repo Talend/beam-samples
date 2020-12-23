@@ -521,7 +521,7 @@
                 <repository>
                     <id>Beam Release Repo</id>
                     <name>Beam Release Repo</name>
-                    <url>https://repository.apache.org/content/repositories/orgapachebeam-1144/</url>
+                    <url>https://repository.apache.org/content/repositories/orgapachebeam-1145/</url>
                 </repository>
             </repositories>
         </profile>
