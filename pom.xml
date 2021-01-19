@@ -47,7 +47,7 @@
         <kafka-clients.version>2.4.1</kafka-clients.version>
         <parquet.version>1.10.0</parquet.version>
         <spark.version>2.4.7</spark.version>
-        <spark3.version>3.0.1</spark3.version>
+        <spark3.version>3.1.1</spark3.version>
 
         <slf4j.version>1.7.30</slf4j.version>
         <junit.version>4.13.1</junit.version>
@@ -519,9 +519,14 @@
             <id>beam-release-repo</id>
             <repositories>
                 <repository>
-                    <id>Beam Release Repo</id>
+                    <id>beam-release-repo</id>
                     <name>Beam Release Repo</name>
                     <url>https://repository.apache.org/content/repositories/orgapachebeam-1149/</url>
+                </repository>
+                <repository>
+                    <id>spark-release-repo</id>
+                    <name>Spark Release Repo</name>
+                    <url>https://repository.apache.org/content/repositories/orgapachespark-1364/</url>
                 </repository>
             </repositories>
         </profile>
