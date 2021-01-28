@@ -39,10 +39,6 @@ jobs:
         run:
           mvn -pl sql exec:java -D"exec.mainClass"="org.apache.beam.samples.sql.BeamSqlAvroExample" -Pdirect-runner -D"exec.args"="--runner=DirectRunner"
       # Run some samples in linux only for more complex open source runners
-      - name: Run Avro SQL Pipeline - Flink Runner
-        if: matrix.os == 'ubuntu-latest'
-        run:
-          mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pflink-runner -Dexec.args="--runner=FlinkRunner"
       - name: Run Avro SQL Pipeline - Spark Classic Runner (Spark 2)
         if: matrix.os == 'ubuntu-latest'
         run:
@@ -55,3 +51,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run:
           mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pspark-runner -Dexec.args="--runner=SparkStructuredStreamingRunner"
+      - name: Run Avro SQL Pipeline - Flink Runner
+        if: matrix.os == 'ubuntu-latest'
+        run:
+          mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pflink-runner -Dexec.args="--runner=FlinkRunner"
