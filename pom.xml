@@ -43,7 +43,7 @@
         <beam.version>2.29.0-SNAPSHOT</beam.version>
         <hadoop.version>2.7.3</hadoop.version>
         <hbase.version>1.2.6</hbase.version>
-        <jackson.version>2.10.2</jackson.version>
+        <jackson.version>2.12.1</jackson.version>
         <kafka-clients.version>2.4.1</kafka-clients.version>
         <parquet.version>1.10.0</parquet.version>
         <spark.version>2.4.7</spark.version>
