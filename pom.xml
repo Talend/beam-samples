@@ -35,6 +35,16 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>beam-release-repo</id>
+            <name>Beam Release Repo</name>
+            <url>https://repository.apache.org/content/repositories/orgapachebeam-1161/</url>
+        </repository>
+        <repository>
+            <id>spark-release-repo</id>
+            <name>Spark Release Repo</name>
+            <url>https://repository.apache.org/content/repositories/orgapachespark-1366/</url>
+        </repository>
     </repositories>
 
     <properties>
@@ -47,7 +57,7 @@
         <kafka-clients.version>2.4.1</kafka-clients.version>
         <parquet.version>1.10.0</parquet.version>
         <spark.version>2.4.7</spark.version>
-        <spark3.version>3.1.1</spark3.version>
+        <spark3.version>3.0.2</spark3.version>
 
         <slf4j.version>1.7.30</slf4j.version>
         <junit.version>4.13.1</junit.version>
@@ -87,6 +97,12 @@
                 <groupId>org.apache.beam</groupId>
                 <artifactId>beam-sdks-java-core</artifactId>
                 <version>${beam.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- Extensions -->
@@ -94,6 +110,12 @@
                 <groupId>org.apache.beam</groupId>
                 <artifactId>beam-sdks-java-extensions-sql</artifactId>
                 <version>${beam.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- IOs -->
@@ -513,22 +535,6 @@
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
-        </profile>
-
-        <profile>
-            <id>beam-release-repo</id>
-            <repositories>
-                <repository>
-                    <id>beam-release-repo</id>
-                    <name>Beam Release Repo</name>
-                    <url>https://repository.apache.org/content/repositories/orgapachebeam-1161/</url>
-                </repository>
-                <repository>
-                    <id>spark-release-repo</id>
-                    <name>Spark Release Repo</name>
-                    <url>https://repository.apache.org/content/repositories/orgapachespark-1365/</url>
-                </repository>
-            </repositories>
         </profile>
     </profiles>
 
