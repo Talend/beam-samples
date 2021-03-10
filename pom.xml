@@ -51,7 +51,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <beam.version>2.29.0-SNAPSHOT</beam.version>
-        <hadoop.version>2.7.3</hadoop.version>
+        <hadoop.version>2.10.1</hadoop.version>
         <hbase.version>1.2.6</hbase.version>
         <jackson.version>2.12.1</jackson.version>
         <kafka-clients.version>2.4.1</kafka-clients.version>
