@@ -345,38 +345,51 @@
             <!-- Runners -->
             <dependency>
                 <groupId>org.apache.beam</groupId>
-                <artifactId>beam-runners-apex</artifactId>
+                <artifactId>beam-runners-direct-java</artifactId>
                 <version>${beam.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.beam</groupId>
-                <artifactId>beam-runners-direct-java</artifactId>
+                <artifactId>beam-runners-flink-1.11</artifactId>
                 <version>${beam.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.beam</groupId>
                 <artifactId>beam-runners-flink-1.12</artifactId>
                 <version>${beam.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.beam</groupId>
                 <artifactId>beam-runners-google-cloud-dataflow-java</artifactId>
                 <version>${beam.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.beam</groupId>
                 <artifactId>beam-runners-samza</artifactId>
                 <version>${beam.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.beam</groupId>
                 <artifactId>beam-runners-spark</artifactId>
                 <version>${beam.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.beam</groupId>
+                <artifactId>beam-runners-spark-3</artifactId>
+                <version>${beam.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
             <!-- Tests -->
@@ -502,7 +515,7 @@
             <dependencies>
                 <dependency>
                     <groupId>org.apache.beam</groupId>
-                    <artifactId>beam-runners-spark</artifactId>
+                    <artifactId>beam-runners-spark-3</artifactId>
                     <version>${beam.version}</version>
                     <scope>runtime</scope>
                 </dependency>

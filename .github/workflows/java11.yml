@@ -40,7 +40,7 @@ jobs:
           mvn -pl sql exec:java -D"exec.mainClass"="org.apache.beam.samples.sql.BeamSqlAvroExample" -Pdirect-runner -D"exec.args"="--runner=DirectRunner"
       # Run some samples in linux only for more complex open source runners
       - name: Run Avro SQL Pipeline - Spark Classic Runner (Spark 3) "${{ matrix.SPARK3_VERSION }}"
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest' && matrix.BEAM_VERSION == '2.30.0-SNAPSHOT'
         run:
           mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pspark3-runner -D"spark3.version"="${{ matrix.SPARK3_VERSION }}" -Dexec.args="--runner=SparkRunner"
       - name: Run Avro SQL Pipeline - Flink Runner
