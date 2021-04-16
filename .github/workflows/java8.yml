@@ -11,7 +11,7 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         BEAM_VERSION:
-          - 2.28.0
+          - 2.29.0
           - 2.30.0-SNAPSHOT
         SPARK3_VERSION:
           - 3.0.2
@@ -44,7 +44,7 @@ jobs:
         run:
           mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pspark-runner -Dexec.args="--runner=SparkRunner"
       - name: Run Avro SQL Pipeline - Spark Classic Runner (Spark 3) "${{ matrix.SPARK3_VERSION }}"
-        if: matrix.os == 'ubuntu-latest' && matrix.BEAM_VERSION == '2.30.0-SNAPSHOT'
+        if: matrix.os == 'ubuntu-latest'
         run:
           mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pspark3-runner -D"spark3.version"="${{ matrix.SPARK3_VERSION }}" -Dexec.args="--runner=SparkRunner"
       - name: Run Avro SQL Pipeline - Spark Structured Streaming Runner (Spark 2)
