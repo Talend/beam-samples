@@ -3,7 +3,7 @@ on:
   push:
   pull_request:
   schedule:
-    - cron: '0 4 * * *' # Once per day at midnight
+    - cron: '0 10 * * *' # Once per day after the daily SNAPSHOTS are published
 jobs:
   build:
     runs-on: ${{ matrix.os }}
