@@ -7,9 +7,6 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    env:
-      # To solve networking issues on github actions
-      SPARK_LOCAL_IP: 127.0.0.1
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
