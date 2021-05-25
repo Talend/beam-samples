@@ -1,0 +1,56 @@
+name: Java 17
+on:
+  push:
+  pull_request:
+  schedule:
+    # Once a day from monday to friday after the daily SNAPSHOTS are published
+    - cron: '0 12 * * 1-5'
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        BEAM_VERSION:
+          - 2.31.0-SNAPSHOT
+        SPARK3_VERSION:
+          # - 3.0.2
+          - 3.1.1
+      fail-fast: false
+    steps:
+      - name: Checkout jbonofre/beam-samples
+        uses: actions/checkout@v2
+      - uses: sdkman/sdkman-action@master
+        id: sdkman
+        with:
+          candidate: java
+          version: 17.ea.23-open
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: jdkfile
+          java-version: 17.0.0
+          jdkFile: ${{ steps.sdkman.outputs.file }}
+      - name: Cache maven artifacts
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Build and Run Tests
+        run:
+          mvn clean verify -D"maven.compiler.release"="17" -D"beam.version"="${{ matrix.BEAM_VERSION }}"
+      # Run some samples
+      - name: Run Avro SQL Pipeline - Direct Runner
+        run:
+          mvn -pl sql exec:java -D"exec.mainClass"="org.apache.beam.samples.sql.BeamSqlAvroExample" -Pdirect-runner -D"exec.args"="--runner=DirectRunner"
+      # Run some samples in linux only for more complex open source runners
+      # - name: Run Avro SQL Pipeline - Spark Classic Runner (Spark 3) "${{ matrix.SPARK3_VERSION }}"
+      #   if: matrix.os == 'ubuntu-latest'
+      #   run:
+      #     mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pspark3-runner -D"spark3.version"="${{ matrix.SPARK3_VERSION }}" -Dexec.args="--runner=SparkRunner"
+      # - name: Run Avro SQL Pipeline - Flink Runner
+      #   if: matrix.os == 'ubuntu-latest'
+      #   run:
+      #     mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pflink-runner -Dexec.args="--runner=FlinkRunner"
