@@ -65,7 +65,7 @@
         <parquet.version>1.10.0</parquet.version>
         <spark.version>2.4.7</spark.version>
         <spark.jackson.version>2.6.7.1</spark.jackson.version>
-        <spark3.version>3.1.1</spark3.version>
+        <spark3.version>3.1.2</spark3.version>
         <spark3.jackson.version>2.10.0</spark3.jackson.version>
         <slf4j.version>1.7.30</slf4j.version>
         <junit.version>4.13.1</junit.version>
