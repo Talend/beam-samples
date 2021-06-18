@@ -23,7 +23,7 @@ jobs:
         id: sdkman
         with:
           candidate: java
-          version: 17.ea.26-open
+          version: 17.ea.27-open
       - name: Setup Java
         uses: actions/setup-java@v2
         with:
