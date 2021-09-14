@@ -1,4 +1,4 @@
-![Java CI](https://github.com/jbonofre/beam-samples/workflows/Java%20CI/badge.svg)
+![Java CI](https://github.com/Talend/beam-samples/workflows/Java%20CI/badge.svg)
 
 # Apache Beam samples
 

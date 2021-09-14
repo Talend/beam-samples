@@ -17,7 +17,7 @@ jobs:
           - 3.2.0-SNAPSHOT
       fail-fast: false
     steps:
-      - name: Checkout jbonofre/beam-samples
+      - name: Checkout Talend/beam-samples
         uses: actions/checkout@v2
       - uses: sdkman/sdkman-action@master
         id: sdkman
