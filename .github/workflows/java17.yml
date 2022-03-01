@@ -12,7 +12,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         BEAM_VERSION:
-          - 2.37.0-SNAPSHOT
+          - 2.38.0-SNAPSHOT
         SPARK3_VERSION:
           - 3.2.0-SNAPSHOT
       fail-fast: false
