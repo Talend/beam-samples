@@ -23,7 +23,7 @@ jobs:
         id: sdkman
         with:
           candidate: java
-          version: 17.ea.3.pma-open
+          version: 17.0.2-tem
       - name: Setup Java
         uses: actions/setup-java@v2
         with:
