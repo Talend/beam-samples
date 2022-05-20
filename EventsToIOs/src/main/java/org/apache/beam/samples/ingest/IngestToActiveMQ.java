@@ -21,6 +21,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.io.jms.JmsIO;
+import org.apache.beam.sdk.io.jms.TextMessageMapper;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.DefaultValueFactory;
 import org.apache.beam.sdk.options.Description;
@@ -82,9 +83,10 @@ public class IngestToActiveMQ {
         Pipeline pipeline = Pipeline.create(options);
         pipeline
             .apply("ReadFromGDELTFile", TextIO.read().from(options.getInput()))
-            .apply("WriteToJMS", JmsIO.write()
+            .apply("WriteToJMS", JmsIO.<String>write()
                 .withConnectionFactory(connFactory)
                 .withQueue(options.getJMSQueue())
+                .withValueMapper(new TextMessageMapper())
         );
         pipeline.run();
     }

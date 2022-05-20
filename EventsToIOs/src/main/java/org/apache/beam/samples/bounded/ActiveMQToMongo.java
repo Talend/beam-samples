@@ -22,6 +22,7 @@ import org.apache.beam.samples.unbounded.KafkaToCassandra;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.jms.JmsIO;
 import org.apache.beam.sdk.io.jms.JmsRecord;
+import org.apache.beam.sdk.io.jms.TextMessageMapper;
 import org.apache.beam.sdk.io.mongodb.MongoDbIO;
 import org.apache.beam.sdk.options.*;
 import org.apache.beam.sdk.transforms.*;
@@ -135,9 +136,10 @@ public class ActiveMQToMongo {
                     return getCountry(row).equals(country);
                 }
             }));
-        eventsInIndia.apply("WriteToJms", JmsIO.write()
+        eventsInIndia.apply("WriteToJms", JmsIO.<String>write()
                         .withConnectionFactory(connFactory)
                         .withQueue("india")
+                        .withValueMapper(new TextMessageMapper())
         );
 
         // we count the events per country and register them in Mongo
