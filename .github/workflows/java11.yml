@@ -17,6 +17,7 @@ jobs:
         SPARK3_VERSION:
           - 3.0.2
           - 3.1.2
+          - 3.2.0
       fail-fast: false
     steps:
       - name: Checkout Talend/beam-samples
