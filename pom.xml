@@ -63,7 +63,7 @@
         <kafka-clients.version>2.4.1</kafka-clients.version>
         <parquet.version>1.10.0</parquet.version>
         <spark.version>2.4.7</spark.version>
-        <spark.jackson.version>2.9.2</spark.jackson.version>
+        <spark.jackson.version>2.12.7.1</spark.jackson.version>
         <spark3.version>3.2.0</spark3.version>
         <spark3.jackson.version>2.10.0</spark3.jackson.version>
         <slf4j.version>1.7.30</slf4j.version>
