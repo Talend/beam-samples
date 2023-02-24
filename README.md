@@ -38,7 +38,7 @@ Direct Runner
 
 Spark Runner
 
-    mvn exec:java -Dexec.mainClass=org.apache.beam.samples.EventsByLocation -Pspark-runner -Dexec.args="--runner=SparkRunner --input=/home/dataset/gdelt/2014-2016/201605*.zip --output=/tmp/gdelt/output/"
+    mvn exec:java -Dexec.mainClass=org.apache.beam.samples.EventsByLocation -Pspark3-runner -Dexec.args="--runner=SparkRunner --input=/home/dataset/gdelt/2014-2016/201605*.zip --output=/tmp/gdelt/output/"
 
 Flink Runner
 
