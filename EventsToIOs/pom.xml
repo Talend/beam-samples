@@ -38,6 +38,12 @@
             <artifactId>beam-sdks-java-core</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.beam</groupId>
+            <artifactId>beam-sdks-java-extensions-avro</artifactId>
+            <version>${beam.version}</version>
+        </dependency>
+
         <!-- IO -->
         <dependency>
             <groupId>org.apache.beam</groupId>
