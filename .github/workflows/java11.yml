@@ -42,6 +42,9 @@ jobs:
       - name: Run Avro SQL Pipeline - Direct Runner
         run:
           mvn -pl sql exec:java -D"exec.mainClass"="org.apache.beam.samples.sql.BeamSqlAvroExample" -Pdirect-runner -D"exec.args"="--runner=DirectRunner"
+      - name: Run Ingest Parquet Pipeline - Direct Runner
+        run:
+          mvn -pl EventsToIOs exec:java -D"exec.mainClass"="org.apache.beam.samples.ingest.IngestParquet" -Pdirect-runner -D"exec.args"="--runner=DirectRunner"
       # Run some samples in linux only for more complex open source runners
       - name: Run Avro SQL Pipeline - Spark Classic Runner (Spark 3) "${{ matrix.SPARK3_VERSION }}"
         if: matrix.os == 'ubuntu-latest'

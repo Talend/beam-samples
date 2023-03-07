@@ -67,6 +67,7 @@ public class IngestParquet {
    */
   public interface Options extends PipelineOptions {
     @Description("Output Path")
+    @Default.String("/tmp/IngestParquet")
     String getOutput();
     void setOutput(String value);
   }
