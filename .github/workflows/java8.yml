@@ -5,9 +5,13 @@ on:
   schedule:
     # Once a day from monday to friday after the daily SNAPSHOTS are published
     - cron: '0 10 * * 1-5'
+
+permissions: read-all
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    permissions: read-all
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
