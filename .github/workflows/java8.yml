@@ -23,6 +23,10 @@ jobs:
           - 3.1.2
           - 3.2.0
           - 3.3.1
+        AVRO_VERSION:
+          - 1.9.2
+          - 1.10.2
+          - 1.11.1
       fail-fast: false
     steps:
       - name: Checkout Talend/beam-samples
@@ -46,22 +50,17 @@ jobs:
       - name: Run Avro SQL Pipeline - Direct Runner
         run:
           mvn -pl sql exec:java -D"exec.mainClass"="org.apache.beam.samples.sql.BeamSqlAvroExample" -Pdirect-runner -D"exec.args"="--runner=DirectRunner"
+      - name: Run Avro SQL Pipeline - Direct Runner - Avro "${{ matrix.AVRO_VERSION }}"
+        if: matrix.os == 'ubuntu-latest'
+        run:
+          mvn -pl sql exec:java -D"exec.mainClass"="org.apache.beam.samples.sql.BeamSqlAvroExample" -Pdirect-runner -D"avro.version"="${{ matrix.AVRO_VERSION }}" -D"exec.args"="--runner=DirectRunner"
       - name: Run Ingest Parquet Pipeline - Direct Runner
         run:
           mvn -pl EventsToIOs exec:java -D"exec.mainClass"="org.apache.beam.samples.ingest.IngestParquet" -Pdirect-runner -D"exec.args"="--runner=DirectRunner"
-      # Run some samples in linux only for more complex open source runners
-      #- name: Run Avro SQL Pipeline - Spark Classic Runner (Spark 2)
-      #  if: matrix.os == 'ubuntu-latest'
-      #  run:
-      #    mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pspark-runner -Dexec.args="--runner=SparkRunner"
       - name: Run Avro SQL Pipeline - Spark Classic Runner (Spark 3) "${{ matrix.SPARK3_VERSION }}"
         if: matrix.os == 'ubuntu-latest'
         run:
           mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pspark3-runner -D"spark3.version"="${{ matrix.SPARK3_VERSION }}" -Dexec.args="--runner=SparkRunner"
-      #- name: Run Avro SQL Pipeline - Spark Structured Streaming Runner (Spark 2)
-      #  if: matrix.os == 'ubuntu-latest'
-      #  run:
-      #    mvn -pl sql exec:java -Dexec.mainClass=org.apache.beam.samples.sql.BeamSqlAvroExample -Pspark-runner -Dexec.args="--runner=SparkStructuredStreamingRunner"
       - name: Run Avro SQL Pipeline - Flink Runner
         if: matrix.os == 'ubuntu-latest'
         run:
