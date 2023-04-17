@@ -63,6 +63,14 @@
             <artifactId>slf4j-jdk14</artifactId>
         </dependency>
 
+        <!-- https://github.com/apache/beam/issues/26295 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.26</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
 </project>

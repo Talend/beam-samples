@@ -205,12 +205,6 @@
 
             <dependency>
                 <groupId>org.apache.beam</groupId>
-                <artifactId>beam-sdks-java-io-kinesis</artifactId>
-                <version>${beam.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.beam</groupId>
                 <artifactId>beam-sdks-java-io-kudu</artifactId>
                 <version>${beam.version}</version>
             </dependency>
