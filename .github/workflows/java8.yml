@@ -17,7 +17,7 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
         BEAM_VERSION:
           - 2.47.0
-          - 2.48.0-SNAPSHOT
+          - 2.49.0-SNAPSHOT
         SPARK3_VERSION:
           - 3.1.2
           - 3.2.0
