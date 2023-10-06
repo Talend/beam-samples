@@ -38,7 +38,7 @@
         <repository>
             <id>beam-release-repo</id>
             <name>Beam Release Repo</name>
-            <url>https://repository.apache.org/content/repositories/orgapachebeam-1355</url>
+            <url>https://repository.apache.org/content/repositories/orgapachebeam-1356</url>
         </repository>
         <repository>
             <id>spark-release-repo</id>
