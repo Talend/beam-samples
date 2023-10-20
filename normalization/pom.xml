@@ -20,6 +20,12 @@
             <artifactId>beam-sdks-java-core</artifactId>
         </dependency>
 
+        <!-- Extensions -->
+        <dependency>
+            <groupId>org.apache.beam</groupId>
+            <artifactId>beam-sdks-java-extensions-sql</artifactId>
+        </dependency>
+
         <!-- IOs -->
         <dependency>
             <groupId>org.apache.beam</groupId>

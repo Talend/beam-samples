@@ -124,6 +124,18 @@
                 </exclusions>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.beam</groupId>
+                <artifactId>beam-sdks-java-extensions-avro</artifactId>
+                <version>${beam.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
             <!-- IOs -->
             <dependency>
                 <groupId>org.apache.beam</groupId>
